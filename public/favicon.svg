@@ -1,26 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="44" fill="none" stroke="#c9a96e" stroke-width="2.5"/>
-  <ellipse cx="50" cy="54" rx="28" ry="20" fill="#c9a96e" opacity="0.15"/>
-  <g fill="#c9a96e">
-    <ellipse cx="68" cy="38" rx="9" ry="7" fill="#c9a96e"/>
-    <circle cx="71" cy="36" r="1.5" fill="#1e2235"/>
-    <ellipse cx="76" cy="40" rx="5" ry="3" fill="#c9a96e"/>
-    <ellipse cx="58" cy="42" rx="9" ry="5" fill="#c9a96e"/>
-    <ellipse cx="49" cy="44" rx="9" ry="5" fill="#c9a96e"/>
-    <ellipse cx="40" cy="48" rx="9" ry="5" fill="#c9a96e"/>
-    <ellipse cx="33" cy="54" rx="9" ry="5" fill="#c9a96e"/>
-    <ellipse cx="55" cy="49" rx="8" ry="4.5" fill="#b8924a"/>
-    <ellipse cx="46" cy="53" rx="8" ry="4.5" fill="#b8924a"/>
-    <ellipse cx="37" cy="59" rx="8" ry="4.5" fill="#b8924a"/>
-    <ellipse cx="34" cy="66" rx="10" ry="6" fill="#c9a96e"/>
-    <ellipse cx="42" cy="72" rx="8" ry="5" fill="#b8924a"/>
-    <ellipse cx="52" cy="74" rx="7" ry="4" fill="#c9a96e"/>
-    <ellipse cx="61" cy="70" rx="6" ry="3.5" fill="#b8924a"/>
-    <ellipse cx="44" cy="68" rx="4" ry="6" fill="#c9a96e"/>
-    <ellipse cx="56" cy="66" rx="4" ry="5" fill="#c9a96e"/>
-    <polygon points="80,25 81.5,28.5 85,28.5 82.5,31 83.5,34.5 80,32.5 76.5,34.5 77.5,31 75,28.5 78.5,28.5" fill="#c9a96e"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 580">
+  <defs>
+    <clipPath id="body-clip">
+      <ellipse cx="232" cy="218" rx="150" ry="146"/>
+    </clipPath>
+    <g id="s">
+      <path d="M 0 0 C -23 -2 -26 -36 0 -50 C 26 -36 23 -2 0 0Z"
+        fill="#c9a96e" stroke="#1a0900" stroke-width="2" stroke-linejoin="round"/>
+      <line x1="0" y1="-4" x2="0" y2="-44" stroke="#1a0900" stroke-width="0.9" opacity="0.55"/>
+    </g>
+  </defs>
+
+  <!-- CRESCENT ARC — center (232,218) r=190, gap on right -->
+  <path d="M 349 68 A 190 190 0 1 0 349 368"
+    fill="none" stroke="#c9a96e" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Inner accent arc (right gap area) -->
+  <path d="M 338 335 Q 400 275 400 218 Q 400 160 338 102"
+    fill="none" stroke="#c9a96e" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/>
+
+  <!-- BODY BASE -->
+  <ellipse cx="232" cy="218" rx="150" ry="146" fill="#c9a96e"/>
+
+  <!-- SCALE TEXTURE -->
+  <g clip-path="url(#body-clip)">
+
+    <!-- Ring 1: r=38, 6 × 60° -->
+    <use xlink:href="#s" transform="translate(232,180) rotate(0)"/>
+    <use xlink:href="#s" transform="translate(265,199) rotate(60)"/>
+    <use xlink:href="#s" transform="translate(265,237) rotate(120)"/>
+    <use xlink:href="#s" transform="translate(232,256) rotate(180)"/>
+    <use xlink:href="#s" transform="translate(199,237) rotate(240)"/>
+    <use xlink:href="#s" transform="translate(199,199) rotate(300)"/>
+
+    <!-- Ring 2: r=72, 8 × 45° -->
+    <use xlink:href="#s" transform="translate(232,146) rotate(0)"/>
+    <use xlink:href="#s" transform="translate(283,167) rotate(45)"/>
+    <use xlink:href="#s" transform="translate(304,218) rotate(90)"/>
+    <use xlink:href="#s" transform="translate(283,269) rotate(135)"/>
+    <use xlink:href="#s" transform="translate(232,290) rotate(180)"/>
+    <use xlink:href="#s" transform="translate(181,269) rotate(225)"/>
+    <use xlink:href="#s" transform="translate(160,218) rotate(270)"/>
+    <use xlink:href="#s" transform="translate(181,167) rotate(315)"/>
+
+    <!-- Ring 3: r=106, 12 × 30° -->
+    <use xlink:href="#s" transform="translate(232,112) rotate(0)"/>
+    <use xlink:href="#s" transform="translate(285,125) rotate(30)"/>
+    <use xlink:href="#s" transform="translate(324,165) rotate(60)"/>
+    <use xlink:href="#s" transform="translate(338,218) rotate(90)"/>
+    <use xlink:href="#s" transform="translate(324,271) rotate(120)"/>
+    <use xlink:href="#s" transform="translate(285,311) rotate(150)"/>
+    <use xlink:href="#s" transform="translate(232,324) rotate(180)"/>
+    <use xlink:href="#s" transform="translate(179,311) rotate(210)"/>
+    <use xlink:href="#s" transform="translate(140,271) rotate(240)"/>
+    <use xlink:href="#s" transform="translate(126,218) rotate(270)"/>
+    <use xlink:href="#s" transform="translate(140,165) rotate(300)"/>
+    <use xlink:href="#s" transform="translate(179,125) rotate(330)"/>
+
+    <!-- Ring 4: r=136, 16 × 22.5° -->
+    <use xlink:href="#s" transform="translate(232,82) rotate(0)"/>
+    <use xlink:href="#s" transform="translate(284,94) rotate(22)"/>
+    <use xlink:href="#s" transform="translate(328,122) rotate(45)"/>
+    <use xlink:href="#s" transform="translate(357,166) rotate(67)"/>
+    <use xlink:href="#s" transform="translate(368,218) rotate(90)"/>
+    <use xlink:href="#s" transform="translate(357,270) rotate(112)"/>
+    <use xlink:href="#s" transform="translate(328,314) rotate(135)"/>
+    <use xlink:href="#s" transform="translate(284,342) rotate(157)"/>
+    <use xlink:href="#s" transform="translate(232,354) rotate(180)"/>
+    <use xlink:href="#s" transform="translate(180,342) rotate(202)"/>
+    <use xlink:href="#s" transform="translate(136,314) rotate(225)"/>
+    <use xlink:href="#s" transform="translate(107,270) rotate(247)"/>
+    <use xlink:href="#s" transform="translate(96,218) rotate(270)"/>
+    <use xlink:href="#s" transform="translate(107,166) rotate(292)"/>
+    <use xlink:href="#s" transform="translate(136,122) rotate(315)"/>
+    <use xlink:href="#s" transform="translate(180,94) rotate(337)"/>
+
   </g>
-  <path d="M 20 76 Q 35 72 50 74 Q 65 76 80 73" stroke="#c9a96e" stroke-width="1.5" fill="none" opacity="0.6"/>
-  <line x1="50" y1="74" x2="50" y2="65" stroke="#c9a96e" stroke-width="1.5"/>
-  <ellipse cx="50" cy="63" rx="6" ry="3" fill="#c9a96e" opacity="0.7"/>
+
+  <!-- HEAD — upper right, facing right -->
+  <ellipse cx="318" cy="148" rx="36" ry="25"
+    fill="#c9a96e" stroke="#1a0900" stroke-width="1.8"
+    transform="rotate(-18,318,148)"/>
+  <!-- Snout -->
+  <path d="M 330 136 Q 360 140 373 150 Q 369 163 353 167 Q 334 168 324 160 Q 318 154 320 148 Z"
+    fill="#c9a96e" stroke="#1a0900" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- Nostril -->
+  <ellipse cx="370" cy="153" rx="4" ry="3" fill="#b08030" stroke="#1a0900" stroke-width="1"/>
+  <!-- Eye -->
+  <ellipse cx="327" cy="144" rx="5" ry="4.5" fill="#1a0900"/>
+  <circle cx="328.5" cy="143" r="1.8" fill="#e8d5a8" opacity="0.65"/>
+  <!-- Head scale-lines -->
+  <path d="M 300 137 Q 318 132 336 139" stroke="#1a0900" stroke-width="1.1" fill="none" opacity="0.5"/>
+  <path d="M 296 150 Q 314 145 332 151" stroke="#1a0900" stroke-width="1.1" fill="none" opacity="0.5"/>
+  <path d="M 300 162 Q 316 158 330 163" stroke="#1a0900" stroke-width="1.1" fill="none" opacity="0.4"/>
+  <!-- Ear -->
+  <path d="M 304 136 Q 309 120 320 126" fill="none" stroke="#1a0900" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- TAIL — right gap, flowing curve -->
+  <path d="M 342 308 Q 384 278 390 248 Q 394 220 380 196"
+    stroke="#c9a96e" stroke-width="13" fill="none" stroke-linecap="round"/>
+  <path d="M 344 315 Q 378 288 382 260 Q 385 236 374 214"
+    stroke="#a07028" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.65"/>
+  <!-- Tail tip scale details -->
+  <path d="M 377 202 Q 387 190 380 181 Q 371 190 377 202Z"
+    fill="#c9a96e" stroke="#1a0900" stroke-width="1.5"/>
+  <path d="M 387 222 Q 398 210 393 200 Q 383 210 387 222Z"
+    fill="#c9a96e" stroke="#1a0900" stroke-width="1.5"/>
+
+  <!-- 4-POINTED DIAMOND STAR -->
+  <path d="M 393 100 L 398 116 L 414 121 L 398 126 L 393 142 L 388 126 L 372 121 L 388 116 Z"
+    fill="#c9a96e"/>
+
+  <!-- NEXUS-AI TEXT -->
+  <text x="250" y="454"
+    text-anchor="middle"
+    fill="#c9a96e"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="46"
+    font-weight="700"
+    letter-spacing="10">NEXUS-AI</text>
 </svg>
