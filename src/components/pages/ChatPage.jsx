@@ -99,6 +99,19 @@ export default function ChatPage() {
   }
 
   const showWelcome = messages.length === 0 && !loadingMessages
+  const [hoveredConv, setHoveredConv] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null)
+
+  const handleDeleteConv = (e, id) => {
+    e.stopPropagation()
+    if (confirmDelete === id) {
+      deleteConversation(id)
+      setConfirmDelete(null)
+    } else {
+      setConfirmDelete(id)
+      setTimeout(() => setConfirmDelete(null), 3000)
+    }
+  }
 
   const iconBtnStyle = {
     width: 30, height: 30, borderRadius: 8,
@@ -154,24 +167,29 @@ export default function ChatPage() {
             </div>
           ) : (
             conversations.map(conv => {
-              const isActive = conv.id === activeConversationId
+              const isActive   = conv.id === activeConversationId
+              const isHovered  = hoveredConv === conv.id
+              const isConfirm  = confirmDelete === conv.id
               return (
-                <div key={conv.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                <div
+                  key={conv.id}
+                  style={{ position: 'relative', marginBottom: '2px' }}
+                  onMouseEnter={() => setHoveredConv(conv.id)}
+                  onMouseLeave={() => { setHoveredConv(null); setConfirmDelete(null) }}
+                >
                   <button
                     onClick={() => selectConversation(conv.id)}
                     style={{
-                      flex:            1,
-                      padding:         '8px 10px',
+                      width:           '100%',
+                      padding:         '8px 36px 8px 10px',
                       borderRadius:    '7px',
                       border:          isActive ? '1px solid var(--color-primary-20)' : '1px solid transparent',
-                      backgroundColor: isActive ? 'var(--color-primary-10)' : 'transparent',
+                      backgroundColor: isActive ? 'var(--color-primary-10)' : isHovered ? 'rgba(255,255,255,0.04)' : 'transparent',
                       cursor:          'pointer',
                       textAlign:       'left',
                       transition:      'all 120ms',
                       overflow:        'hidden',
                     }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)' }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent' }}
                   >
                     <div style={{
                       fontSize: '12px', fontWeight: 500,
@@ -184,15 +202,30 @@ export default function ChatPage() {
                       {new Date(conv.updatedAt).toLocaleDateString()}
                     </div>
                   </button>
+
+                  {/* Delete button — appears on row hover */}
                   <button
-                    onClick={() => deleteConversation(conv.id)}
+                    onClick={(e) => handleDeleteConv(e, conv.id)}
+                    title={isConfirm ? 'Click again to confirm delete' : 'Delete chat'}
                     style={{
-                      padding: 4, borderRadius: 5, border: 'none', background: 'none',
-                      color: 'var(--text-muted)', cursor: 'pointer', opacity: 0,
-                      transition: 'opacity 150ms', flexShrink: 0,
+                      position:   'absolute',
+                      right:       6,
+                      top:        '50%',
+                      transform:  'translateY(-50%)',
+                      width:       24,
+                      height:      24,
+                      borderRadius: 5,
+                      border:      isConfirm ? '1px solid #ef444440' : 'none',
+                      background:  isConfirm ? '#ef444415' : 'none',
+                      color:       isConfirm ? '#ef4444' : 'rgba(255,255,255,0.3)',
+                      cursor:      'pointer',
+                      display:     'flex',
+                      alignItems:  'center',
+                      justifyContent: 'center',
+                      opacity:     isHovered || isConfirm ? 1 : 0,
+                      transition:  'opacity 150ms, color 150ms, background 150ms',
+                      flexShrink:  0,
                     }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                    onMouseLeave={e => e.currentTarget.style.opacity = 0}
                     aria-label="Delete conversation"
                   >
                     <Trash2 size={12} />
