@@ -162,6 +162,8 @@ export const PROVIDERS = {
       { id: "deepseek-ai/deepseek-r1",                   name: "DeepSeek R1",                category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
       { id: "deepseek-ai/deepseek-r1-distill-llama-70b", name: "DeepSeek R1 Distill 70B",    category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
       { id: "deepseek-ai/deepseek-v3",                   name: "DeepSeek V3",                category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek-ai/deepseek-v3-0324",              name: "DeepSeek V3 0324",           category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek-ai/deepseek-v2.5",                 name: "DeepSeek V2.5",              category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
       // Mistral / Mixtral
       { id: "mistralai/mixtral-8x7b-instruct-v0.1",      name: "Mixtral 8x7B",               category: ["chat","code"],            contextWindow: 32000,  free: true, preloaded: true },
       { id: "mistralai/mixtral-8x22b-instruct-v0.1",     name: "Mixtral 8x22B",              category: ["chat","code","analysis"], contextWindow: 65536,  free: true, preloaded: true },

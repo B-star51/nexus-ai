@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion'
-import { Plus, Check, Zap, ExternalLink, Grid3X3, MessageSquare, Code2, Image, BarChart3, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, Check, Zap, ExternalLink, Grid3X3, MessageSquare, Code2, Image, BarChart3, Sparkles, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { PROVIDERS, CATEGORIES, formatContextWindow } from '../../utils/providers'
 
@@ -12,6 +13,20 @@ export default function ModelsPage() {
     providerKeys,
     openAddModelModal,
   } = useAppStore()
+
+  const [activeOpen, setActiveOpen] = useState(true)
+  const [confirmRemove, setConfirmRemove] = useState(null)
+
+  const handleRemove = (providerId, modelId) => {
+    const key = `${providerId}:${modelId}`
+    if (confirmRemove === key) {
+      removeModel(providerId, modelId)
+      setConfirmRemove(null)
+    } else {
+      setConfirmRemove(key)
+      setTimeout(() => setConfirmRemove(null), 3000)
+    }
+  }
 
   const allProviderModels = []
   for (const [providerId, provider] of Object.entries(PROVIDERS)) {
@@ -74,6 +89,97 @@ export default function ModelsPage() {
           <Plus size={15} /> Configure API Keys
         </button>
       </div>
+
+      {/* ── Active Models panel ── */}
+      {activeModels.length > 0 && (
+        <div style={{
+          marginBottom: 28, borderRadius: 12,
+          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.02)',
+          overflow: 'hidden',
+        }}>
+          <button
+            onClick={() => setActiveOpen(o => !o)}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+              padding: '12px 16px', background: 'none', border: 'none',
+              cursor: 'pointer', color: 'var(--text-primary)',
+            }}
+          >
+            <div style={{
+              width: 24, height: 24, borderRadius: 6,
+              background: 'var(--color-primary-20)', border: '1px solid var(--color-primary-30)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Check size={13} color="var(--color-primary)" strokeWidth={3}/>
+            </div>
+            <span style={{ fontWeight: 600, fontSize: 14 }}>Active Models</span>
+            <span style={{
+              fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 99,
+              background: 'var(--color-primary-20)', color: 'var(--color-primary)',
+            }}>{activeModels.length}</span>
+            <span style={{ marginLeft: 'auto', color: 'var(--text-muted)', fontSize: 11 }}>
+              {activeOpen ? 'hide' : 'show'}
+            </span>
+            {activeOpen ? <ChevronUp size={14} style={{ color: 'var(--text-muted)' }}/> : <ChevronDown size={14} style={{ color: 'var(--text-muted)' }}/>}
+          </button>
+
+          <AnimatePresence>
+            {activeOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{
+                  display: 'flex', flexWrap: 'wrap', gap: 8,
+                  padding: '4px 16px 14px',
+                }}>
+                  {activeModels.map(entry => {
+                    const provider = PROVIDERS[entry.providerId]
+                    const model    = provider?.models.find(m => m.id === entry.modelId)
+                    if (!model) return null
+                    const key      = `${entry.providerId}:${entry.modelId}`
+                    const isConfirm = confirmRemove === key
+                    return (
+                      <div key={key} style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '5px 10px 5px 8px', borderRadius: 8,
+                        background: isConfirm ? '#ef444412' : `${provider.color}10`,
+                        border: isConfirm ? '1px solid #ef444440' : `1px solid ${provider.color}25`,
+                        transition: 'all 150ms',
+                      }}>
+                        <span style={{ fontSize: 12 }}>{provider.logo}</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>
+                          {model.name}
+                        </span>
+                        <button
+                          onClick={() => handleRemove(entry.providerId, entry.modelId)}
+                          title={isConfirm ? 'Click again to remove' : 'Remove model'}
+                          style={{
+                            width: 18, height: 18, borderRadius: 4,
+                            border: 'none', background: 'none',
+                            cursor: 'pointer', padding: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: isConfirm ? '#ef4444' : 'rgba(255,255,255,0.3)',
+                            transition: 'color 150ms',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                          onMouseLeave={e => { if (!isConfirm) e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
+                        >
+                          <Trash2 size={11}/>
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       {Object.keys(grouped).length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 24px' }}>
