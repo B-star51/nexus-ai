@@ -127,23 +127,17 @@ export const useChatStore = create((set, get) => ({
       }))
     } catch (err) {
       const rawMsg = err.message || 'Failed to get response.'
-      // Translate browser CORS/network errors into helpful guidance
-      const isCorsError = rawMsg.toLowerCase().includes('failed to fetch') ||
-                          rawMsg.toLowerCase().includes('networkerror') ||
-                          rawMsg.toLowerCase().includes('load failed')
+      const isNetworkError = rawMsg.toLowerCase().includes('failed to fetch') ||
+                             rawMsg.toLowerCase().includes('networkerror') ||
+                             rawMsg.toLowerCase().includes('load failed')
       let displayMsg = rawMsg
-      if (isCorsError) {
-        const corsProviders = { nvidia: 'NVIDIA NIM', sambanova: 'SambaNova', cerebras: 'Cerebras' }
-        if (corsProviders[providerId]) {
-          displayMsg = `**${corsProviders[providerId]} blocks direct browser requests (CORS restriction).**\n\n` +
-            `These providers require a server-side setup. To use these models in NexusAI:\n\n` +
-            `**Option 1 — Use OpenRouter** (recommended, free)\n` +
-            `→ Add your OpenRouter key → the same models are available there and work in browsers.\n\n` +
-            `**Option 2 — Use Google provider** for Gemma models (free API key at aistudio.google.com)\n\n` +
-            `**Option 3 — Use Groq** for Llama/Mistral models (free, very fast)`
-        } else {
-          displayMsg = `**Network error** — could not reach ${providerId}. Check your internet connection and that the API key is saved correctly.`
-        }
+      if (isNetworkError) {
+        displayMsg = `**Network error reaching ${PROVIDERS[providerId]?.name || providerId}.**\n\n` +
+          `Possible causes:\n` +
+          `• The model **${modelId}** may not be available as a hosted endpoint yet\n` +
+          `• Check your API key is saved correctly (+ Add Model → Save Key)\n` +
+          `• Try a different model from the same provider\n` +
+          `• Check your internet connection`
       }
       const errMsg = {
         ...assistantMsg,
@@ -315,16 +309,18 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
         headers['HTTP-Referer'] = 'https://nexusai.app'
         headers['X-Title'] = 'NexusAI'
       }
+      const body = {
+        model:       modelId,
+        messages:    history,
+        max_tokens:  agentMaxTokens || 4096,
+        temperature: agentTemperature,
+        top_p:       agentTopP,
+        stream:      false,
+      }
       const res = await fetch(url, {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          model:       modelId,
-          messages:    history,
-          max_tokens:  agentMaxTokens || 4096,
-          temperature: agentTemperature,
-          top_p:       agentTopP,
-        }),
+        body: JSON.stringify(body),
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))

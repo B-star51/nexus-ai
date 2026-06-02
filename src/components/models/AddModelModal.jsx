@@ -176,20 +176,9 @@ function ProviderTab({ providerId }) {
 
       {/* NVIDIA note */}
       {providerId === 'nvidia' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(118,185,0,0.08)', border: '1px solid rgba(118,185,0,0.2)', fontSize: 12, color: '#9dcc4a' }}>
-            Free trial at <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ color: '#76b900' }}>build.nvidia.com</a> — no credit card needed. Key starts with <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>nvapi-</code>
-          </div>
-          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', fontSize: 12, color: '#fbbf24' }}>
-            ⚠ <strong>Browser limitation:</strong> NVIDIA's API blocks direct browser requests. Use these models via <strong>OpenRouter</strong> instead — add an OpenRouter key and the same models are available there without this restriction.
-          </div>
-        </div>
-      )}
-
-      {/* SambaNova / Cerebras CORS note */}
-      {(providerId === 'sambanova' || providerId === 'cerebras') && (
-        <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', fontSize: 12, color: '#fbbf24' }}>
-          ⚠ <strong>Browser limitation:</strong> {providerId === 'sambanova' ? 'SambaNova' : 'Cerebras'} blocks direct browser requests. For the same models in NexusAI, use <strong>OpenRouter</strong> or <strong>Groq</strong> instead.
+        <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(118,185,0,0.08)', border: '1px solid rgba(118,185,0,0.2)', fontSize: 12, color: '#9dcc4a' }}>
+          Free trial at <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ color: '#76b900' }}>build.nvidia.com</a> — no credit card needed. Key starts with <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>nvapi-</code>.<br/>
+          <span style={{ opacity: 0.7 }}>Note: some models are "Downloadable only" and won't work as hosted endpoints.</span>
         </div>
       )}
 

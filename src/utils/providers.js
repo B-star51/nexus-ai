@@ -180,9 +180,11 @@ export const PROVIDERS = {
       { id: "qwen/qwen2.5-coder-32b-instruct",           name: "Qwen 2.5 Coder 32B",         category: ["code"],                   contextWindow: 32000,  free: true, preloaded: true },
       { id: "qwen/qwen3-235b-a22b",                      name: "Qwen3 235B",                 category: ["chat","code","analysis"], contextWindow: 131072, free: true, preloaded: true },
       // Google
-      { id: "google/gemma-3n-e2b-it",                     name: "Gemma 3n E2B",               category: ["chat","code"],            contextWindow: 8192,   free: true, preloaded: true },
+      { id: "google/gemma-3n-e4b-it",                     name: "Gemma 3n E4B",               category: ["chat","code"],            contextWindow: 32768,  free: true, preloaded: true },
+      { id: "google/gemma-3n-e2b-it",                    name: "Gemma 3n E2B",               category: ["chat","code"],            contextWindow: 32768,  free: true, preloaded: true },
       { id: "google/gemma-3-27b-it",                     name: "Gemma 3 27B",                category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
       { id: "google/gemma-3-12b-it",                     name: "Gemma 3 12B",                category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      { id: "google/gemma-3-4b-it",                      name: "Gemma 3 4B",                 category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
       { id: "google/gemma-2-9b-it",                      name: "Gemma 2 9B",                 category: ["chat"],                   contextWindow: 8192,   free: true, preloaded: true },
       // Microsoft
       { id: "microsoft/phi-3-medium-4k-instruct",        name: "Phi-3 Medium 4K",            category: ["chat","code"],            contextWindow: 4096,   free: true, preloaded: true },
