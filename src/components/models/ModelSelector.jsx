@@ -123,18 +123,19 @@ export default function ModelSelector({ compact = false, onChange }) {
             transition={{ duration: 0.12, ease: 'easeOut' }}
             style={{
               position:        'absolute',
-              top:             'calc(100% + 6px)',
-              left:            0,
-              zIndex:          500,
-              width:           320,
+              bottom:          'calc(100% + 8px)',
+              left:            '50%',
+              transform:       'translateX(-50%)',
+              zIndex:          9999,
+              width:           340,
               backgroundColor: 'var(--bg-elevated)',
               border:          '1px solid var(--border)',
-              borderRadius:    '12px',
-              boxShadow:       '0 16px 48px rgba(0,0,0,0.6)',
-              overflow:        'hidden',
+              borderRadius:    '14px',
+              boxShadow:       '0 -8px 48px rgba(0,0,0,0.7)',
               display:         'flex',
               flexDirection:   'column',
-              maxHeight:       380,
+              maxHeight:       '60vh',
+              overflow:        'hidden',
             }}
           >
             {/* Search */}
