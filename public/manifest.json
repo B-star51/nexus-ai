@@ -1,0 +1,20 @@
+{
+  "name": "NexusAI Dashboard",
+  "short_name": "NexusAI",
+  "description": "Multi-model AI dashboard — chat, code, analyze, and create with leading AI models from Anthropic, OpenAI, Google, and more.",
+  "theme_color": "#e86c28",
+  "background_color": "#0a0a0f",
+  "display": "standalone",
+  "start_url": "/nexus-ai/",
+  "scope": "/nexus-ai/",
+  "orientation": "any",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/nexus-ai/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

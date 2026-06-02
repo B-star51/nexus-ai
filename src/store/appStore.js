@@ -1,0 +1,148 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { COLOR_PRESETS } from '../utils/providers'
+
+const DEFAULT_THEME = 'Anthropic Orange'
+
+function applyThemeToDOM(presetName, customPrimary, customSecondary) {
+  const preset = COLOR_PRESETS[presetName]
+  const primary   = customPrimary   || (preset ? preset.primary   : COLOR_PRESETS[DEFAULT_THEME].primary)
+  const secondary = customSecondary || (preset ? preset.secondary : COLOR_PRESETS[DEFAULT_THEME].secondary)
+  const bg        = preset?.bg || '#0a0a0f'
+
+  const root = document.documentElement
+  root.style.setProperty('--color-primary', primary)
+  root.style.setProperty('--color-secondary', secondary)
+  root.style.setProperty('--color-bg', bg)
+  root.style.backgroundColor = bg
+
+  // Derive alpha variants from hex
+  const r = parseInt(primary.slice(1,3), 16)
+  const g = parseInt(primary.slice(3,5), 16)
+  const b = parseInt(primary.slice(5,7), 16)
+  root.style.setProperty('--color-primary-10', `rgba(${r},${g},${b},0.10)`)
+  root.style.setProperty('--color-primary-20', `rgba(${r},${g},${b},0.20)`)
+  root.style.setProperty('--color-primary-30', `rgba(${r},${g},${b},0.30)`)
+  root.style.setProperty('--color-primary-50', `rgba(${r},${g},${b},0.50)`)
+}
+
+export const useAppStore = create(
+  persist(
+    (set, get) => ({
+      // ─── Active Models ────────────────────────────────────────
+      activeModels: [],
+
+      addModel: (entry) => set((s) => ({
+        activeModels: [...s.activeModels.filter(m => !(m.providerId === entry.providerId && m.modelId === entry.modelId)), entry],
+      })),
+
+      removeModel: (providerId, modelId) => set((s) => ({
+        activeModels: s.activeModels.filter(m => !(m.providerId === providerId && m.modelId === modelId)),
+      })),
+
+      updateApiKey: (providerId, apiKey) => set((s) => ({
+        activeModels: s.activeModels.map(m =>
+          m.providerId === providerId ? { ...m, apiKey } : m
+        ),
+      })),
+
+      getApiKey: (providerId) => {
+        const found = get().activeModels.find(m => m.providerId === providerId)
+        return found?.apiKey || null
+      },
+
+      // ─── Theme ───────────────────────────────────────────────
+      themePreset:     DEFAULT_THEME,
+      customPrimary:   null,
+      customSecondary: null,
+      bgColor:         '#0a0a0f',
+
+      setTheme: (presetName, customPrimary = null, customSecondary = null) => {
+        const preset = COLOR_PRESETS[presetName]
+        const bg = preset?.bg || '#0a0a0f'
+        applyThemeToDOM(presetName, customPrimary, customSecondary)
+        set({ themePreset: presetName, customPrimary, customSecondary, bgColor: bg })
+      },
+
+      applyStoredTheme: () => {
+        const { themePreset, customPrimary, customSecondary } = get()
+        applyThemeToDOM(themePreset, customPrimary, customSecondary)
+      },
+
+      // ─── Navigation ──────────────────────────────────────────
+      activePage:      'dashboard',
+      setActivePage:   (page) => set({ activePage: page }),
+
+      sidebarOpen:     true,
+      setSidebarOpen:  (open) => set({ sidebarOpen: open }),
+      toggleSidebar:   () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+
+      // ─── Category filter ─────────────────────────────────────
+      activeCategory:     'all',
+      setActiveCategory:  (cat) => set({ activeCategory: cat }),
+
+      // ─── Selected model for chat ─────────────────────────────
+      selectedProviderId: null,
+      selectedModelId:    null,
+      selectModel: (providerId, modelId) => set({ selectedProviderId: providerId, selectedModelId: modelId }),
+
+      // ─── UI flags ────────────────────────────────────────────
+      showAddModelModal:    false,
+      showThemeCustomizer:  false,
+      showVotingModal:      false,
+
+      openAddModelModal:    () => set({ showAddModelModal: true }),
+      closeAddModelModal:   () => set({ showAddModelModal: false }),
+      openThemeCustomizer:  () => set({ showThemeCustomizer: true }),
+      closeThemeCustomizer: () => set({ showThemeCustomizer: false }),
+      openVotingModal:      () => set({ showVotingModal: true }),
+      closeVotingModal:     () => set({ showVotingModal: false }),
+
+      // ─── API key status per provider ─────────────────────────
+      keyStatus: {},
+      setKeyStatus: (providerId, status) => set((s) => ({
+        keyStatus: { ...s.keyStatus, [providerId]: status },
+      })),
+
+      // ─── Provider API keys (separate from activeModels) ──────
+      providerKeys: {},
+      setProviderKey: (providerId, key) => set((s) => ({
+        providerKeys: { ...s.providerKeys, [providerId]: key },
+      })),
+      getProviderKey: (providerId) => get().providerKeys[providerId] || '',
+
+      // ─── Agent settings ───────────────────────────────────────
+      agentName:         'NexusAI',
+      agentSystemPrompt: '',
+      agentTemperature:  0.7,
+      agentMaxTokens:    2048,
+      agentTopP:         1.0,
+
+      setAgentName:         (name)   => set({ agentName: name }),
+      setAgentSystemPrompt: (prompt) => set({ agentSystemPrompt: prompt }),
+      setAgentTemperature:  (temp)   => set({ agentTemperature: temp }),
+      setAgentMaxTokens:    (tokens) => set({ agentMaxTokens: tokens }),
+      setAgentTopP:         (topP)   => set({ agentTopP: topP }),
+    }),
+    {
+      name: 'nexus-ai-app',
+      partialize: (s) => ({
+        activeModels:       s.activeModels,
+        themePreset:        s.themePreset,
+        customPrimary:      s.customPrimary,
+        customSecondary:    s.customSecondary,
+        bgColor:            s.bgColor,
+        sidebarOpen:        s.sidebarOpen,
+        selectedProviderId: s.selectedProviderId,
+        selectedModelId:    s.selectedModelId,
+        providerKeys:       s.providerKeys,
+        keyStatus:          s.keyStatus,
+        agentName:          s.agentName,
+        agentSystemPrompt:  s.agentSystemPrompt,
+        agentTemperature:   s.agentTemperature,
+        agentMaxTokens:     s.agentMaxTokens,
+        agentTopP:          s.agentTopP,
+      }),
+    }
+  )
+)

@@ -1,0 +1,370 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ───────────────────────────────────── */
+:root {
+  --color-primary:    #e86c28;
+  --color-secondary:  #f5a76c;
+  --color-bg:         #0a0a0f;
+  --color-primary-10: rgba(232, 108, 40, 0.10);
+  --color-primary-20: rgba(232, 108, 40, 0.20);
+  --color-primary-30: rgba(232, 108, 40, 0.30);
+  --color-primary-50: rgba(232, 108, 40, 0.50);
+
+  --bg-base:     #0a0a0f;
+  --bg-surface:  #111118;
+  --bg-elevated: #1a1a24;
+  --bg-sidebar:  #0d0d14;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border:        rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  --text-primary:   rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-muted:     rgba(255, 255, 255, 0.35);
+
+  --transition-fast:   150ms ease-out;
+  --transition-normal: 200ms ease-in-out;
+  --transition-slow:   300ms ease-out;
+
+  color-scheme: dark;
+}
+
+/* ─── Base Reset ───────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg, var(--bg-base));
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Scrollbar Styling ────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ─── Selection ────────────────────────────────────────────────── */
+::selection {
+  background: var(--color-primary-30);
+  color: var(--text-primary);
+}
+
+/* ─── Focus Rings ──────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Utility Classes ──────────────────────────────────────────── */
+@layer utilities {
+  .text-primary-color   { color: var(--color-primary); }
+  .text-secondary-color { color: var(--color-secondary); }
+  .bg-primary-color     { background-color: var(--color-primary); }
+  .bg-primary-10        { background-color: var(--color-primary-10); }
+  .bg-primary-20        { background-color: var(--color-primary-20); }
+  .border-primary       { border-color: var(--color-primary); }
+  .border-primary-30    { border-color: var(--color-primary-30); }
+
+  .text-primary-text   { color: var(--text-primary); }
+  .text-secondary-text { color: var(--text-secondary); }
+  .text-muted-text     { color: var(--text-muted); }
+
+  .bg-base     { background-color: var(--bg-base); }
+  .bg-surface  { background-color: var(--bg-surface); }
+  .bg-elevated { background-color: var(--bg-elevated); }
+  .bg-sidebar  { background-color: var(--bg-sidebar); }
+
+  .border-subtle { border-color: var(--border-subtle); }
+  .border-base   { border-color: var(--border); }
+  .border-strong { border-color: var(--border-strong); }
+
+  .glow-primary    { box-shadow: 0 0 20px var(--color-primary-30); }
+  .glow-primary-lg { box-shadow: 0 0 40px var(--color-primary-20); }
+
+  .transition-theme {
+    transition: color var(--transition-normal),
+                background-color var(--transition-normal),
+                border-color var(--transition-normal),
+                box-shadow var(--transition-normal);
+  }
+}
+
+/* ─── Component Classes ────────────────────────────────────────── */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm;
+    @apply transition-all duration-150 cursor-pointer;
+    background-color: var(--color-primary);
+    color: #fff;
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 16px var(--color-primary-30);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+    filter: brightness(0.95);
+  }
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm;
+    @apply transition-all duration-150 cursor-pointer;
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--border-strong);
+    background-color: rgba(255,255,255,0.05);
+  }
+  .btn-secondary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-sm;
+    @apply transition-all duration-150 cursor-pointer;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+  }
+  .btn-ghost:hover {
+    background-color: rgba(255,255,255,0.06);
+    color: var(--text-primary);
+  }
+
+  .card {
+    @apply rounded-xl;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+  }
+  .card-elevated {
+    @apply rounded-xl;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border);
+  }
+
+  .input-base {
+    @apply w-full px-3 py-2 rounded-lg text-sm font-medium;
+    @apply transition-all duration-150;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+  }
+  .input-base::placeholder {
+    color: var(--text-muted);
+  }
+  .input-base:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-10);
+  }
+
+  .badge-free {
+    @apply text-xs font-semibold px-1.5 py-0.5 rounded;
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium;
+    @apply transition-all duration-150 cursor-pointer;
+    color: var(--text-secondary);
+  }
+  .nav-item:hover {
+    background-color: rgba(255,255,255,0.06);
+    color: var(--text-primary);
+  }
+  .nav-item.active {
+    background-color: var(--color-primary-10);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-20);
+  }
+  .nav-item.active:hover {
+    background-color: var(--color-primary-20);
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+    background-color: rgba(255,255,255,0.08);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .skeleton {
+    @apply rounded;
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.04) 25%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Pixel art character frames */
+  .pixel-char {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* ─── Pixel Art Loader Keyframes ───────────────────────────────── */
+@keyframes pixelBlink {
+  0%, 49%  { opacity: 1; }
+  50%, 100%{ opacity: 0; }
+}
+
+@keyframes pixelFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes pixelGlow {
+  0%, 100% { box-shadow: 0 0 20px var(--color-primary-30), 0 0 60px var(--color-primary-10); }
+  50%      { box-shadow: 0 0 40px var(--color-primary-50), 0 0 80px var(--color-primary-20); }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes loaderFadeOut {
+  0%   { opacity: 1; pointer-events: all; }
+  100% { opacity: 0; pointer-events: none; }
+}
+
+@keyframes contentFadeIn {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.loader-fade-out {
+  animation: loaderFadeOut 0.5s ease-out forwards;
+}
+
+.content-fade-in {
+  animation: contentFadeIn 0.4s ease-out forwards;
+}
+
+/* ─── Chat message styles ──────────────────────────────────────── */
+.chat-bubble-user {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.chat-bubble-ai {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 18px 4px;
+}
+
+.code-block {
+  background-color: #0d0d14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ─── Theme transition ─────────────────────────────────────────── */
+*, *::before, *::after {
+  --tw-transition-property: color, background-color, border-color, box-shadow;
+}
+
+/* ─── Mobile nav ───────────────────────────────────────────────── */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-nav {
+    display: flex;
+  }
+  .desktop-sidebar {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar-collapsed {
+    width: 64px !important;
+  }
+}
+
+/* ─── Preloaded badge ──────────────────────────────────────────── */
+.badge-preloaded {
+  background: linear-gradient(135deg, #22c55e20, #22c55e10);
+  border: 1px solid #22c55e40;
+  color: #22c55e;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Local badge ──────────────────────────────────────────────── */
+.badge-local {
+  background: linear-gradient(135deg, #44a8b320, #44a8b310);
+  border: 1px solid #44a8b340;
+  color: #44a8b3;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
