@@ -288,11 +288,12 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
     case 'cerebras':
     case 'sambanova':
     case 'github': {
+      const { nvidiaProxyUrl } = useAppStore.getState()
       const baseUrls = {
         openai:     'https://api.openai.com/v1',
         groq:       'https://api.groq.com/openai/v1',
         together:   'https://api.together.xyz/v1',
-        nvidia:     'https://integrate.api.nvidia.com/v1',
+        nvidia:     nvidiaProxyUrl ? nvidiaProxyUrl.replace(/\/$/, '') : 'https://integrate.api.nvidia.com/v1',
         mistral:    'https://api.mistral.ai/v1',
         openrouter: 'https://openrouter.ai/api/v1',
         cerebras:   'https://api.cerebras.ai/v1',

@@ -87,12 +87,14 @@ export default function AddModelModal({ open, onClose }) {
 
 function ProviderTab({ providerId }) {
   const provider = PROVIDERS[providerId]
-  const { providerKeys, setProviderKey, activeModels, addModel, removeModel } = useAppStore()
+  const { providerKeys, setProviderKey, activeModels, addModel, removeModel, nvidiaProxyUrl, setNvidiaProxyUrl } = useAppStore()
 
-  const [showKey,  setShowKey]  = useState(false)
-  const [saved,    setSaved]    = useState(false)
-  const [search,   setSearch]   = useState('')
-  const [localKey, setLocalKey] = useState(providerKeys[providerId] || '')
+  const [showKey,   setShowKey]   = useState(false)
+  const [saved,     setSaved]     = useState(false)
+  const [search,    setSearch]    = useState('')
+  const [localKey,  setLocalKey]  = useState(providerKeys[providerId] || '')
+  const [proxyUrl,  setProxyUrl]  = useState(nvidiaProxyUrl || '')
+  const [proxySaved, setProxySaved] = useState(false)
 
   const enabledModelIds = new Set(
     activeModels.filter(m => m.providerId === providerId).map(m => m.modelId)
@@ -194,16 +196,60 @@ function ProviderTab({ providerId }) {
         </div>
       )}
 
-      {/* NVIDIA note */}
+      {/* NVIDIA note + proxy setup */}
       {providerId === 'nvidia' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(118,185,0,0.08)', border: '1px solid rgba(118,185,0,0.2)', fontSize: 12, color: '#9dcc4a' }}>
             Free trial at <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ color: '#76b900' }}>build.nvidia.com</a> — no credit card needed. Key starts with <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>nvapi-</code>.
           </div>
-          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', fontSize: 12, color: '#fbbf24', lineHeight: 1.7 }}>
-            ⚠ NVIDIA's hosted API blocks browser requests (confirmed CORS limitation).<br/>
-            <strong>Alternatives that work:</strong> Use <strong>Puter (Free)</strong> tab for GPT/Claude/Gemini/DeepSeek, or <strong>OpenRouter</strong> for DeepSeek/Llama models — both work in browsers with no CORS issues.
+
+          {/* Cloudflare Worker proxy section */}
+          <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', fontSize: 12, lineHeight: 1.8 }}>
+            <div style={{ fontWeight: 700, color: '#818cf8', marginBottom: 6 }}>🚀 Fix CORS — Deploy a free Cloudflare Worker proxy</div>
+            <div style={{ color: 'rgba(255,255,255,0.55)', marginBottom: 10 }}>
+              NVIDIA blocks browser requests. A Cloudflare Worker (free, 100k req/day) fixes this in minutes:
+              <br/>1. Go to <a href="https://workers.cloudflare.com" target="_blank" rel="noopener noreferrer" style={{ color: '#818cf8' }}>workers.cloudflare.com</a> → Create Account → Create Worker
+              <br/>2. Paste the code from <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>cloudflare-worker/nvidia-proxy.js</code> in your NexusAI repo
+              <br/>3. Click Deploy → copy the Worker URL (e.g. <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 4px', borderRadius: 3 }}>https://nexusai-nvidia.yourname.workers.dev/v1</code>)
+              <br/>4. Paste it below — all NVIDIA models will work instantly ✅
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                value={proxyUrl}
+                onChange={e => setProxyUrl(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { setNvidiaProxyUrl(proxyUrl); setProxySaved(true); setTimeout(() => setProxySaved(false), 2500) }}}
+                placeholder="https://nexusai-nvidia.yourname.workers.dev/v1"
+                className="input-base"
+                style={{ flex: 1, fontSize: 12 }}
+              />
+              <button
+                onClick={() => { setNvidiaProxyUrl(proxyUrl); setProxySaved(true); setTimeout(() => setProxySaved(false), 2500) }}
+                style={{
+                  padding: '0 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                  background: proxySaved ? '#22c55e' : '#6366f1', color: '#fff', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', gap: 5, transition: 'background 200ms',
+                }}
+              >
+                {proxySaved ? <><Check size={13}/> Saved!</> : 'Save Proxy'}
+              </button>
+            </div>
+            {nvidiaProxyUrl && (
+              <div style={{ marginTop: 6, fontSize: 11, color: '#22c55e' }}>
+                ✅ Proxy active — NVIDIA models routed through your worker
+              </div>
+            )}
           </div>
+        </div>
+      )}
+
+      {/* GitHub Models instructions */}
+      {providerId === 'github' && (
+        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(110,64,201,0.08)', border: '1px solid rgba(110,64,201,0.25)', fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.8 }}>
+          <div style={{ fontWeight: 700, color: '#a78bfa', marginBottom: 4 }}>🐙 Free — uses your existing GitHub account</div>
+          GPT-4o, Phi-4, Llama 3.3 70B, Mistral Large, DeepSeek R1 — all free (150 req/day per model)<br/>
+          1. Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }}>github.com/settings/tokens</a><br/>
+          2. Generate new token (classic) → check <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 4px', borderRadius: 3 }}>read:org</code> scope<br/>
+          3. Copy the token and paste it below as your API key
         </div>
       )}
 

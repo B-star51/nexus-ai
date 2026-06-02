@@ -123,6 +123,10 @@ export const useAppStore = create(
       setAgentTemperature:  (temp)   => set({ agentTemperature: temp }),
       setAgentMaxTokens:    (tokens) => set({ agentMaxTokens: tokens }),
       setAgentTopP:         (topP)   => set({ agentTopP: topP }),
+
+      // ─── Proxy URLs ───────────────────────────────────────────────
+      nvidiaProxyUrl: '',
+      setNvidiaProxyUrl: (url) => set({ nvidiaProxyUrl: url }),
     }),
     {
       name: 'nexus-ai-app',
@@ -142,6 +146,7 @@ export const useAppStore = create(
         agentTemperature:   s.agentTemperature,
         agentMaxTokens:     s.agentMaxTokens,
         agentTopP:          s.agentTopP,
+        nvidiaProxyUrl:     s.nvidiaProxyUrl,
       }),
     }
   )
