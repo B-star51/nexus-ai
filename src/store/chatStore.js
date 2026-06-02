@@ -126,9 +126,28 @@ export const useChatStore = create((set, get) => ({
         sending: false,
       }))
     } catch (err) {
+      const rawMsg = err.message || 'Failed to get response.'
+      // Translate browser CORS/network errors into helpful guidance
+      const isCorsError = rawMsg.toLowerCase().includes('failed to fetch') ||
+                          rawMsg.toLowerCase().includes('networkerror') ||
+                          rawMsg.toLowerCase().includes('load failed')
+      let displayMsg = rawMsg
+      if (isCorsError) {
+        const corsProviders = { nvidia: 'NVIDIA NIM', sambanova: 'SambaNova', cerebras: 'Cerebras' }
+        if (corsProviders[providerId]) {
+          displayMsg = `**${corsProviders[providerId]} blocks direct browser requests (CORS restriction).**\n\n` +
+            `These providers require a server-side setup. To use these models in NexusAI:\n\n` +
+            `**Option 1 — Use OpenRouter** (recommended, free)\n` +
+            `→ Add your OpenRouter key → the same models are available there and work in browsers.\n\n` +
+            `**Option 2 — Use Google provider** for Gemma models (free API key at aistudio.google.com)\n\n` +
+            `**Option 3 — Use Groq** for Llama/Mistral models (free, very fast)`
+        } else {
+          displayMsg = `**Network error** — could not reach ${providerId}. Check your internet connection and that the API key is saved correctly.`
+        }
+      }
       const errMsg = {
         ...assistantMsg,
-        content: `**Error:** ${err.message || 'Failed to get response.'}`,
+        content: `${displayMsg}`,
         streaming: false,
         error: true,
       }
