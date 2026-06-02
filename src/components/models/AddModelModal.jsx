@@ -416,10 +416,21 @@ async function testProviderConnection(providerId, apiKey) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
     },
     nvidia: async () => {
-      const res = await fetch('https://integrate.api.nvidia.com/v1/models', {
-        headers: { Authorization: `Bearer ${apiKey}` },
+      // /v1/models is CORS-blocked from browsers — use a tiny completion call instead
+      const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'meta/llama-3.1-8b-instruct',
+          messages: [{ role: 'user', content: 'hi' }],
+          max_tokens: 1,
+        }),
       })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      // 401 = bad key, anything else (200, 400, 422) means key was accepted
+      if (res.status === 401) throw new Error('Invalid API key')
     },
     together: async () => {
       const res = await fetch('https://api.together.xyz/v1/models', {

@@ -43,6 +43,9 @@ export const PROVIDERS = {
       { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite", category: ["chat","code"], contextWindow: 1000000, free: true, preloaded: true },
       { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", category: ["chat","code"], contextWindow: 1000000, free: true, preloaded: true },
       { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", category: ["chat","code","analysis"], contextWindow: 2000000, free: false },
+      { id: "gemma-3n-e2b-it", name: "Gemma 3n E2B", category: ["chat","code"], contextWindow: 8192, free: true, preloaded: true },
+      { id: "gemma-3-27b-it", name: "Gemma 3 27B", category: ["chat","code"], contextWindow: 131072, free: true, preloaded: true },
+      { id: "gemma-3-12b-it", name: "Gemma 3 12B", category: ["chat","code"], contextWindow: 131072, free: true, preloaded: true },
     ]
   },
   openrouter: {
