@@ -529,8 +529,35 @@ async function callImageAPI({ providerId, modelId, apiKey, prompt }) {
 
 export { callProviderAPI }
 
-// ── Free web search — no API key, CORS-friendly (DuckDuckGo + Wikipedia) ──
+// ── Web search — uses Jina (real-time) if a free key is set, else DuckDuckGo + Wikipedia ──
 async function webSearch(query) {
+  const { jinaApiKey } = useAppStore.getState()
+
+  // Best option: Jina full real-time search (needs free key, no payment)
+  if (jinaApiKey?.trim()) {
+    try {
+      const res = await fetch(`https://s.jina.ai/?q=${encodeURIComponent(query)}`, {
+        headers: {
+          'Authorization': `Bearer ${jinaApiKey.trim()}`,
+          'Accept': 'application/json',
+          'X-Respond-With': 'no-content',
+        },
+      })
+      if (res.ok) {
+        const raw = await res.text()
+        try {
+          const data = JSON.parse(raw)
+          if (data?.data?.length) {
+            return data.data.slice(0, 5).map((r, i) =>
+              `[${i + 1}] ${r.title || ''}\n${r.url || ''}\n${(r.description || r.content || '').slice(0, 300)}`
+            ).join('\n\n')
+          }
+        } catch { if (raw) return raw.slice(0, 2500) }
+      }
+    } catch { /* fall through to free sources */ }
+  }
+
+  // Fallback: free, no-key, CORS-friendly sources
   const parts = []
 
   // 1) DuckDuckGo Instant Answer — abstracts, definitions, facts

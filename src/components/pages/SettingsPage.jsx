@@ -15,11 +15,15 @@ const SECTIONS = [
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('api')
-  const { openThemeCustomizer, themePreset, setTheme, dailyTokenCap, setDailyTokenCap, tokenUsage } = useAppStore()
+  const { openThemeCustomizer, themePreset, setTheme, dailyTokenCap, setDailyTokenCap, tokenUsage, jinaApiKey, setJinaApiKey } = useAppStore()
+  const [jinaInput, setJinaInput] = useState('')
+  const [jinaSaved, setJinaSaved] = useState(false)
   const [storageInfo, setStorageInfo] = useState(null)
   const [convCount, setConvCount]     = useState(0)
   const [clearing, setClearing]       = useState(false)
   const [capInput, setCapInput]       = useState(dailyTokenCap ? String(dailyTokenCap) : '')
+
+  useEffect(() => { setJinaInput(jinaApiKey || '') }, [jinaApiKey])
 
   const todayTokens = tokenUsage?.[new Date().toISOString().slice(0, 10)] || 0
 
@@ -216,6 +220,44 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
+
+            {/* Jina web search key */}
+            <div style={{
+              padding: '16px', borderRadius: 10, marginBottom: 16,
+              border: '1px solid rgba(56,189,248,0.25)', background: 'rgba(56,189,248,0.05)',
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                🌐 Web Search Key (Jina) {jinaApiKey && <span style={{ fontSize: 11, color: '#4ade80' }}>● Active</span>}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.7 }}>
+                Optional — supercharges the <strong>🌐 Web</strong> toggle with full real-time search for every model.
+                Without it, web search falls back to free DuckDuckGo + Wikipedia.<br/>
+                Get a <strong>free key (no payment)</strong> at <a href="https://jina.ai/api-dashboard/" target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8' }}>jina.ai/api-dashboard</a> — 10M free tokens.
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="password"
+                  value={jinaInput}
+                  onChange={e => setJinaInput(e.target.value)}
+                  placeholder="jina_..."
+                  style={{
+                    flex: 1, minWidth: 200, padding: '9px 12px', borderRadius: 8, boxSizing: 'border-box',
+                    border: '1px solid var(--border)', background: 'var(--bg-elevated)',
+                    color: 'var(--text-primary)', fontSize: 13, outline: 'none', fontFamily: 'monospace',
+                  }}
+                />
+                <button className="btn-primary"
+                  onClick={() => { setJinaApiKey(jinaInput.trim()); setJinaSaved(true); setTimeout(() => setJinaSaved(false), 2000) }}
+                  style={{ fontSize: 13 }}>
+                  {jinaSaved ? '✓ Saved' : 'Save Key'}
+                </button>
+                {jinaApiKey && (
+                  <button className="btn-secondary" onClick={() => { setJinaApiKey(''); setJinaInput('') }} style={{ fontSize: 13 }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
 
             {/* Daily token cap */}
             <div style={{

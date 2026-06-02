@@ -25,7 +25,7 @@ const PAGE_TITLES = {
 
 export default function Header({ onMobileMenuOpen }) {
   const {
-    activePage,
+    activePage, setActivePage,
     activeCategory, setActiveCategory,
     openAddModelModal, openThemeCustomizer,
     selectedProviderId, selectedModelId, activeModels,
@@ -106,7 +106,11 @@ export default function Header({ onMobileMenuOpen }) {
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
+                  onClick={() => {
+                    setActiveCategory(cat.id)
+                    // On dashboard, jump to Models filtered by this category
+                    if (activePage === 'dashboard') setActivePage('models')
+                  }}
                   style={{
                     display:         'flex',
                     alignItems:      'center',

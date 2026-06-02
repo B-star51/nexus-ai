@@ -155,9 +155,11 @@ export const useAppStore = create(
       })),
       removePrompt: (id) => set((s) => ({ savedPrompts: s.savedPrompts.filter(p => p.id !== id) })),
 
-      // ─── Web search (works for ALL models via Jina) ──────────────
+      // ─── Web search (works for ALL models) ───────────────────────
       webSearchEnabled: false,
       toggleWebSearch: () => set((s) => ({ webSearchEnabled: !s.webSearchEnabled })),
+      jinaApiKey: '',  // optional free key for full real-time search
+      setJinaApiKey: (k) => set({ jinaApiKey: k }),
 
       // ─── Token usage tracking (per day) ──────────────────────────
       tokenUsage: {},        // { '2026-06-02': 12345 }
@@ -201,6 +203,8 @@ export const useAppStore = create(
         savedPrompts:          s.savedPrompts,
         tokenUsage:            s.tokenUsage,
         dailyTokenCap:         s.dailyTokenCap,
+        webSearchEnabled:      s.webSearchEnabled,
+        jinaApiKey:            s.jinaApiKey,
       }),
     }
   )
