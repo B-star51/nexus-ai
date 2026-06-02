@@ -298,7 +298,7 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
         openrouter: 'https://openrouter.ai/api/v1',
         cerebras:   'https://api.cerebras.ai/v1',
         sambanova:  'https://api.sambanova.ai/v1',
-        github:     'https://models.inference.ai.azure.com',
+        github:     'https://models.github.ai/inference',
       }
       const url = `${baseUrls[providerId]}/chat/completions`
       const headers = {

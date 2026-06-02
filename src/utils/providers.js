@@ -124,18 +124,45 @@ export const PROVIDERS = {
     name: "GitHub Models",
     logo: "🐙",
     color: "#6e40c9",
-    baseUrl: "https://models.inference.ai.azure.com",
-    docsUrl: "https://docs.github.com/en/github-models",
-    keyPlaceholder: "ghp_... or github_pat_...",
+    baseUrl: "https://models.github.ai/inference",
+    docsUrl: "https://github.com/marketplace/models",
+    keyPlaceholder: "ghp_...",
     keySignupUrl: "https://github.com/settings/tokens",
-    description: "Free AI models via GitHub's model marketplace.",
+    description: "Free AI models — GPT-4o, DeepSeek, Llama 4, Phi-4, Grok and more. Uses your GitHub personal access token.",
     models: [
-      { id: "gpt-4o",                              name: "GPT-4o",              category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
-      { id: "gpt-4o-mini",                         name: "GPT-4o Mini",         category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
-      { id: "meta-llama-3.3-70b-instruct",         name: "Llama 3.3 70B",       category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
-      { id: "mistral-large-2411",                  name: "Mistral Large",        category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
-      { id: "phi-4",                               name: "Phi-4",               category: ["chat","code"],            contextWindow: 16384,  free: true, preloaded: true },
-      { id: "AI21-Jamba-1.5-Large",                name: "Jamba 1.5 Large",     category: ["chat","analysis"],        contextWindow: 256000, free: true, preloaded: true },
+      // OpenAI
+      { id: "openai/gpt-4o",                                    name: "GPT-4o",                   category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "openai/gpt-4o-mini",                               name: "GPT-4o Mini",               category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "openai/gpt-4.1",                                   name: "GPT-4.1",                   category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "openai/gpt-4.1-mini",                              name: "GPT-4.1 Mini",              category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "openai/o3-mini",                                   name: "o3-mini",                   category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "openai/o4-mini",                                   name: "o4-mini",                   category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      // DeepSeek
+      { id: "deepseek/DeepSeek-R1",                             name: "DeepSeek R1",               category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek/DeepSeek-R1-0528",                        name: "DeepSeek R1 0528",          category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek/DeepSeek-V3-0324",                        name: "DeepSeek V3",               category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      // Meta Llama
+      { id: "meta/Llama-4-Maverick-17B-128E-Instruct-FP8",     name: "Llama 4 Maverick 17B",      category: ["chat","code","analysis"], contextWindow: 524288, free: true, preloaded: true },
+      { id: "meta/Llama-4-Scout-17B-16E-Instruct",              name: "Llama 4 Scout 17B",         category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      { id: "meta/Llama-3.3-70B-Instruct",                      name: "Llama 3.3 70B",             category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta/Meta-Llama-3.1-405B-Instruct",               name: "Llama 3.1 405B",            category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      // Microsoft
+      { id: "microsoft/Phi-4",                                  name: "Phi-4",                     category: ["chat","code"],            contextWindow: 16384,  free: true, preloaded: true },
+      { id: "microsoft/Phi-4-mini-instruct",                    name: "Phi-4 Mini",                category: ["chat","code"],            contextWindow: 16384,  free: true, preloaded: true },
+      { id: "microsoft/Phi-4-reasoning",                        name: "Phi-4 Reasoning",           category: ["chat","code","analysis"], contextWindow: 32768,  free: true, preloaded: true },
+      { id: "microsoft/MAI-DS-R1",                              name: "MAI-DS-R1",                 category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      // Mistral
+      { id: "mistral-ai/Mistral-Small-3.1",                     name: "Mistral Small 3.1",         category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "mistral-ai/Codestral-2501",                        name: "Codestral 25.01",           category: ["code"],                   contextWindow: 32000,  free: true, preloaded: true },
+      { id: "mistral-ai/Ministral-3B",                          name: "Ministral 3B",              category: ["chat"],                   contextWindow: 32000,  free: true, preloaded: true },
+      // xAI
+      { id: "xai/grok-3",                                       name: "Grok 3",                    category: ["chat","analysis"],        contextWindow: 131072, free: true, preloaded: true },
+      { id: "xai/grok-3-mini",                                  name: "Grok 3 Mini",               category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      // Cohere
+      { id: "cohere/Cohere-command-r-plus-08-2024",             name: "Command R+ 08-2024",        category: ["chat","analysis"],        contextWindow: 128000, free: true, preloaded: true },
+      { id: "cohere/Cohere-command-a",                          name: "Command A",                 category: ["chat","analysis"],        contextWindow: 256000, free: true, preloaded: true },
+      // AI21
+      { id: "ai21-labs/AI21-Jamba-1.5-Large",                   name: "Jamba 1.5 Large",           category: ["chat","analysis"],        contextWindow: 256000, free: true, preloaded: true },
     ]
   },
   nvidia: {

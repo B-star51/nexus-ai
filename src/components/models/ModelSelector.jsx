@@ -163,7 +163,7 @@ export default function ModelSelector({ compact = false, onChange }) {
             </div>
 
             {/* Model list */}
-            <div style={{ overflowY: 'auto', flex: 1 }}>
+            <div style={{ overflowY: 'scroll', flex: 1, minHeight: 0, maxHeight: '45vh' }}>
               {!hasModels ? (
                 <div style={{ padding: '32px 16px', textAlign: 'center' }}>
                   <Zap size={24} style={{ color: 'var(--text-muted)', marginBottom: 8 }} />
