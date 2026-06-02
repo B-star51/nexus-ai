@@ -386,6 +386,24 @@ export const PROVIDERS = {
       { id: "@cf/microsoft/phi-4-multimodal-instruct", name: "Phi-4 Multimodal",    category: ["chat","code"],            contextWindow: 16384,  free: true, preloaded: true },
     ]
   },
+  pollinations: {
+    name: "Pollinations (Free)",
+    logo: "🌸",
+    color: "#ec4899",
+    baseUrl: "https://image.pollinations.ai",
+    docsUrl: "https://pollinations.ai",
+    keyPlaceholder: "No API key needed",
+    keySignupUrl: "https://pollinations.ai",
+    local: true,
+    description: "100% free image generation — no API key, no sign-up. Works instantly in your browser. FLUX, Stable Diffusion and more.",
+    models: [
+      { id: "flux",          name: "FLUX",                category: ["images"], contextWindow: 0, free: true, preloaded: true, local: true },
+      { id: "flux-realism",  name: "FLUX Realism",        category: ["images"], contextWindow: 0, free: true, preloaded: true, local: true },
+      { id: "flux-anime",    name: "FLUX Anime",          category: ["images"], contextWindow: 0, free: true, preloaded: true, local: true },
+      { id: "flux-3d",       name: "FLUX 3D",             category: ["images"], contextWindow: 0, free: true, preloaded: true, local: true },
+      { id: "turbo",         name: "Turbo (Fast)",        category: ["images"], contextWindow: 0, free: true, preloaded: true, local: true },
+    ]
+  },
 }
 
 export const CATEGORIES = [

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, MessageSquare, Copy, Check,
-  Zap, Loader2, Code, Send, Search, Terminal,
+  Zap, Loader2, Code, Send, Search, Terminal, Download, Image,
 } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { useChatStore } from '../../store/chatStore'
@@ -406,13 +406,26 @@ export default function ChatPage() {
               padding: '8px 16px 10px',
               borderTop: '1px solid rgba(255,255,255,0.06)',
             }}>
-              {/* Left icon buttons */}
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button style={iconBtnStyle} title="Search" aria-label="Search">
-                  <Search size={14} />
-                </button>
-                <button style={iconBtnStyle} title="Terminal" aria-label="Terminal">
-                  <Terminal size={14} />
+              {/* Left buttons */}
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <button
+                  onClick={openVotingModal}
+                  title="Make Models Vote — get answers from multiple models and let them vote"
+                  aria-label="Make Models Vote"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+                    border: '1px solid var(--color-primary-30)',
+                    background: 'var(--color-primary-10)',
+                    color: 'var(--color-primary)',
+                    fontSize: 12, fontWeight: 600, flexShrink: 0,
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-primary-20)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary-10)' }}
+                >
+                  <Zap size={14} />
+                  <span className="hidden sm:inline">Vote</span>
                 </button>
               </div>
 

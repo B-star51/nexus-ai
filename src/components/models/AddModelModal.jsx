@@ -181,7 +181,15 @@ function ProviderTab({ providerId }) {
         <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.25)', fontSize: 12, color: '#22d3ee', lineHeight: 1.7 }}>
           <strong style={{ fontSize: 13 }}>☁️ No API key needed — completely free!</strong><br/>
           Puter provides GPT-4o, Claude, Gemini, DeepSeek and 500+ models free via their cloud infrastructure.<br/>
-          <span style={{ opacity: 0.7 }}>Just enable models below and start chatting. No sign-up required.</span>
+          <span style={{ opacity: 0.7 }}>Just enable models below and start chatting. A Puter sign-in popup may appear on first use.</span>
+        </div>
+      )}
+
+      {providerId === 'pollinations' && (
+        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.25)', fontSize: 12, color: '#f472b6', lineHeight: 1.7 }}>
+          <strong style={{ fontSize: 13 }}>🌸 100% free image generation — no key, no sign-up!</strong><br/>
+          Generate images instantly with FLUX, realism, anime and 3D styles.<br/>
+          <span style={{ opacity: 0.7 }}>Just enable a model below, select it in chat, and type what you want to see.</span>
         </div>
       )}
 

@@ -407,6 +407,22 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
 }
 
 async function callImageAPI({ providerId, modelId, apiKey, prompt }) {
+  if (providerId === 'pollinations') {
+    // Free, no key — direct image URL with seed for uniqueness
+    const seed = Math.floor(Math.random() * 1000000)
+    const encoded = encodeURIComponent(prompt)
+    const url = `https://image.pollinations.ai/prompt/${encoded}?model=${modelId}&width=1024&height=1024&seed=${seed}&nologo=true`
+    // Pre-load to confirm it generates before returning
+    await new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = resolve
+      img.onerror = () => reject(new Error('Pollinations failed to generate image'))
+      img.src = url
+      setTimeout(resolve, 100) // don't block — image loads in the bubble
+    })
+    return `__IMAGE__${url}__END_IMAGE__`
+  }
+
   if (providerId === 'huggingface') {
     const res = await fetch(`https://api-inference.huggingface.co/models/${modelId}`, {
       method: 'POST',
