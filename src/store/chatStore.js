@@ -227,7 +227,10 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
     }
 
     case 'google': {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`
+      // Models with "-search" suffix enable live Google Search grounding (free in Gemini free tier)
+      const webSearch = modelId.includes('-search')
+      const realModelId = modelId.replace('-search', '')
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${realModelId}:generateContent?key=${apiKey}`
       const geminiMessages = userMessages.map(m => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
@@ -235,6 +238,9 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
       const body = { contents: geminiMessages }
       if (compiledPrompt) {
         body.systemInstruction = { parts: [{ text: compiledPrompt }] }
+      }
+      if (webSearch) {
+        body.tools = [{ google_search: {} }]
       }
       const res = await fetch(url, {
         method: 'POST',
@@ -246,7 +252,17 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
         throw new Error(err?.error?.message || `API error ${res.status}`)
       }
       const data = await res.json()
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+      const cand = data.candidates?.[0]
+      let text = cand?.content?.parts?.map(p => p.text).filter(Boolean).join('') || ''
+      // Append grounding sources if web search was used
+      const chunks = cand?.groundingMetadata?.groundingChunks
+      if (webSearch && chunks?.length) {
+        const sources = chunks
+          .map((c, i) => c.web?.uri ? `${i + 1}. [${c.web.title || c.web.uri}](${c.web.uri})` : null)
+          .filter(Boolean)
+        if (sources.length) text += `\n\n---\n**🌐 Sources:**\n${sources.join('\n')}`
+      }
+      return text
     }
 
     case 'huggingface': {

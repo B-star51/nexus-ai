@@ -190,6 +190,15 @@ export default function ModelSelector({ compact = false, onChange }) {
                             </div>
                           )}
                         </div>
+                        {model.web && (
+                          <span style={{
+                            fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
+                            background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)',
+                            color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0,
+                          }}>
+                            🌐 Live
+                          </span>
+                        )}
                         {model.category?.includes('images') && (
                           <span style={{
                             fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 99,

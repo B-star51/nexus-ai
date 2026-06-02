@@ -39,6 +39,8 @@ export const PROVIDERS = {
     keySignupUrl: "https://aistudio.google.com/app/apikey",
     description: "Gemini models with massive context windows.",
     models: [
+      { id: "gemini-2.0-flash-search", name: "Gemini 2.0 Flash 🌐 Web Search", category: ["chat","analysis"], contextWindow: 1000000, free: true, preloaded: true, web: true },
+      { id: "gemini-1.5-flash-search", name: "Gemini 1.5 Flash 🌐 Web Search", category: ["chat","analysis"], contextWindow: 1000000, free: true, preloaded: true, web: true },
       { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", category: ["chat","code","analysis"], contextWindow: 1000000, free: true, preloaded: true },
       { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite", category: ["chat","code"], contextWindow: 1000000, free: true, preloaded: true },
       { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", category: ["chat","code"], contextWindow: 1000000, free: true, preloaded: true },
