@@ -260,6 +260,49 @@ export const PROVIDERS = {
       { id: "mistralai/Mixtral-8x22B-Instruct-v0.1",        name: "Mixtral 8x22B",        category: ["chat","code"], contextWindow: 65000,  free: false },
     ]
   },
+  puter: {
+    name: "Puter (Free)",
+    logo: "☁️",
+    color: "#06b6d4",
+    baseUrl: "puter",
+    docsUrl: "https://developer.puter.com/tutorials/free-llm-api/",
+    keyPlaceholder: "No API key needed",
+    keySignupUrl: "https://developer.puter.com/tutorials/free-llm-api/",
+    description: "500+ models completely free — no API key, no sign-up, no credit card. Works directly in your browser via Puter's infrastructure.",
+    local: true,
+    models: [
+      { id: "openai/gpt-4o",                    name: "GPT-4o (Free)",           category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "openai/gpt-4o-mini",               name: "GPT-4o Mini (Free)",      category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "anthropic/claude-sonnet-4-5",       name: "Claude Sonnet 4.5 (Free)",category: ["chat","code","analysis"], contextWindow: 200000, free: true, preloaded: true },
+      { id: "anthropic/claude-haiku-4-5",        name: "Claude Haiku 4.5 (Free)", category: ["chat","code"],            contextWindow: 200000, free: true, preloaded: true },
+      { id: "google/gemini-2.0-flash",           name: "Gemini 2.0 Flash (Free)", category: ["chat","code","analysis"], contextWindow: 1000000,free: true, preloaded: true },
+      { id: "deepseek/deepseek-r1",              name: "DeepSeek R1 (Free)",      category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek/deepseek-v3",              name: "DeepSeek V3 (Free)",      category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B (Free)",   category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "mistralai/mistral-large-latest",    name: "Mistral Large (Free)",    category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "x-ai/grok-2",                      name: "Grok-2 (Free)",           category: ["chat","analysis"],        contextWindow: 131072, free: true, preloaded: true },
+      { id: "google/gemma-3-27b-it",             name: "Gemma 3 27B (Free)",      category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+    ]
+  },
+  cloudflare: {
+    name: "Cloudflare AI",
+    logo: "🌤️",
+    color: "#f6821f",
+    baseUrl: "https://api.cloudflare.com/client/v4/accounts",
+    docsUrl: "https://developers.cloudflare.com/workers-ai/models/",
+    keyPlaceholder: "account_id|api_token",
+    keySignupUrl: "https://dash.cloudflare.com/sign-up",
+    description: "Free 10,000 neurons/day. Llama, Gemma, Mistral and more on Cloudflare's global edge network. Format: accountId|apiToken",
+    models: [
+      { id: "@cf/meta/llama-3.1-8b-instruct",          name: "Llama 3.1 8B",       category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "@cf/meta/llama-3.3-70b-instruct-fp8-fast", name: "Llama 3.3 70B Fast", category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "@cf/google/gemma-3-12b-it",               name: "Gemma 3 12B",         category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      { id: "@cf/mistral/mistral-7b-instruct-v0.1",    name: "Mistral 7B",          category: ["chat","code"],            contextWindow: 32000,  free: true, preloaded: true },
+      { id: "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b", name: "DeepSeek R1 Distill 32B", category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "@cf/qwen/qwen2.5-coder-32b-instruct",     name: "Qwen 2.5 Coder 32B", category: ["code"],                   contextWindow: 32000,  free: true, preloaded: true },
+      { id: "@cf/microsoft/phi-4-multimodal-instruct", name: "Phi-4 Multimodal",    category: ["chat","code"],            contextWindow: 16384,  free: true, preloaded: true },
+    ]
+  },
 }
 
 export const CATEGORIES = [

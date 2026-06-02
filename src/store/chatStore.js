@@ -330,6 +330,49 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
       return data.choices?.[0]?.message?.content || ''
     }
 
+    case 'puter': {
+      // Puter.js — load SDK dynamically, no API key needed
+      if (!window.puter) {
+        await new Promise((resolve, reject) => {
+          if (document.querySelector('script[src*="js.puter.com"]')) {
+            const check = setInterval(() => { if (window.puter) { clearInterval(check); resolve() } }, 100)
+            return
+          }
+          const script = document.createElement('script')
+          script.src = 'https://js.puter.com/v2/'
+          script.onload = () => {
+            const check = setInterval(() => { if (window.puter) { clearInterval(check); resolve() } }, 100)
+          }
+          script.onerror = () => reject(new Error('Failed to load Puter.js'))
+          document.head.appendChild(script)
+        })
+      }
+      const lastMsg   = history[history.length - 1]?.content || ''
+      const response  = await window.puter.ai.chat(history.length > 1 ? history : lastMsg, {
+        model:       modelId,
+        temperature: agentTemperature,
+      })
+      return typeof response === 'string' ? response : response?.message?.content || response?.content || String(response)
+    }
+
+    case 'cloudflare': {
+      // Cloudflare Workers AI — key format: "accountId|apiToken"
+      const [accountId, cfToken] = (apiKey || '').split('|')
+      if (!accountId || !cfToken) throw new Error('Cloudflare key format: paste as accountId|apiToken')
+      const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/v1/chat/completions`
+      const res = await fetch(cfUrl, {
+        method:  'POST',
+        headers: { Authorization: `Bearer ${cfToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: modelId, messages: history, max_tokens: agentMaxTokens || 4096 }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.errors?.[0]?.message || `Cloudflare API error ${res.status}`)
+      }
+      const data = await res.json()
+      return data.result?.response || data.choices?.[0]?.message?.content || ''
+    }
+
     default:
       throw new Error(`Provider "${providerId}" not yet supported.`)
   }

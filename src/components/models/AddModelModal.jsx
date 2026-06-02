@@ -174,15 +174,40 @@ function ProviderTab({ providerId }) {
         </div>
       )}
 
-      {/* NVIDIA note */}
-      {providerId === 'nvidia' && (
-        <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(118,185,0,0.08)', border: '1px solid rgba(118,185,0,0.2)', fontSize: 12, color: '#9dcc4a' }}>
-          Free trial at <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ color: '#76b900' }}>build.nvidia.com</a> — no credit card needed. Key starts with <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>nvapi-</code>.<br/>
-          <span style={{ opacity: 0.7 }}>Note: some models are "Downloadable only" and won't work as hosted endpoints.</span>
+      {/* Puter — no key needed */}
+      {providerId === 'puter' && (
+        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.25)', fontSize: 12, color: '#22d3ee', lineHeight: 1.7 }}>
+          <strong style={{ fontSize: 13 }}>☁️ No API key needed — completely free!</strong><br/>
+          Puter provides GPT-4o, Claude, Gemini, DeepSeek and 500+ models free via their cloud infrastructure.<br/>
+          <span style={{ opacity: 0.7 }}>Just enable models below and start chatting. No sign-up required.</span>
         </div>
       )}
 
-      {/* API Key — hidden for Ollama */}
+      {/* Cloudflare Workers AI */}
+      {providerId === 'cloudflare' && (
+        <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(246,130,31,0.08)', border: '1px solid rgba(246,130,31,0.25)', fontSize: 12, color: '#fb923c', lineHeight: 1.7 }}>
+          <strong>Free 10,000 neurons/day</strong> — no credit card needed.<br/>
+          1. Sign up at <a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" style={{ color: '#f97316' }}>dash.cloudflare.com</a> (free account)<br/>
+          2. Copy your <strong>Account ID</strong> from the dashboard<br/>
+          3. Create an <strong>API Token</strong> with Workers AI permissions<br/>
+          4. Paste as: <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>accountId|apiToken</code>
+        </div>
+      )}
+
+      {/* NVIDIA note */}
+      {providerId === 'nvidia' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(118,185,0,0.08)', border: '1px solid rgba(118,185,0,0.2)', fontSize: 12, color: '#9dcc4a' }}>
+            Free trial at <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ color: '#76b900' }}>build.nvidia.com</a> — no credit card needed. Key starts with <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 3 }}>nvapi-</code>.
+          </div>
+          <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', fontSize: 12, color: '#fbbf24', lineHeight: 1.7 }}>
+            ⚠ NVIDIA's hosted API blocks browser requests (confirmed CORS limitation).<br/>
+            <strong>Alternatives that work:</strong> Use <strong>Puter (Free)</strong> tab for GPT/Claude/Gemini/DeepSeek, or <strong>OpenRouter</strong> for DeepSeek/Llama models — both work in browsers with no CORS issues.
+          </div>
+        </div>
+      )}
+
+      {/* API Key — hidden for Ollama and Puter */}
       {!provider.local && (
         <div>
           <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
