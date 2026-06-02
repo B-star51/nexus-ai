@@ -287,7 +287,9 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
     case 'openrouter':
     case 'cerebras':
     case 'sambanova':
-    case 'github': {
+    case 'github':
+    case 'hyperbolic':
+    case 'perplexity': {
       const { nvidiaProxyUrl } = useAppStore.getState()
       const baseUrls = {
         openai:     'https://api.openai.com/v1',
@@ -299,6 +301,8 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
         cerebras:   'https://api.cerebras.ai/v1',
         sambanova:  'https://api.sambanova.ai/v1',
         github:     'https://models.github.ai/inference',
+        hyperbolic: 'https://api.hyperbolic.xyz/v1',
+        perplexity: 'https://api.perplexity.ai',
       }
       const url = `${baseUrls[providerId]}/chat/completions`
       const headers = {

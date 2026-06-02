@@ -287,6 +287,40 @@ export const PROVIDERS = {
       { id: "mistralai/Mixtral-8x22B-Instruct-v0.1",        name: "Mixtral 8x22B",        category: ["chat","code"], contextWindow: 65000,  free: false },
     ]
   },
+  hyperbolic: {
+    name: "Hyperbolic",
+    logo: "⚛️",
+    color: "#7c3aed",
+    baseUrl: "https://api.hyperbolic.xyz/v1",
+    docsUrl: "https://docs.hyperbolic.xyz",
+    keyPlaceholder: "eyJ...",
+    keySignupUrl: "https://app.hyperbolic.xyz/settings",
+    description: "Free tier with powerful open-source models — Llama 405B, DeepSeek, Qwen. Sign up for free credits.",
+    models: [
+      { id: "meta-llama/Meta-Llama-3.1-405B-Instruct",     name: "Llama 3.1 405B",       category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta-llama/Llama-3.3-70B-Instruct",           name: "Llama 3.3 70B",         category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek-ai/DeepSeek-R1",                     name: "DeepSeek R1",           category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek-ai/DeepSeek-V3",                     name: "DeepSeek V3",           category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "Qwen/Qwen2.5-72B-Instruct",                   name: "Qwen 2.5 72B",          category: ["chat","code","analysis"], contextWindow: 32000,  free: true, preloaded: true },
+      { id: "Qwen/QwQ-32B",                                name: "QwQ 32B (Reasoning)",   category: ["chat","code","analysis"], contextWindow: 32768,  free: true, preloaded: true },
+    ]
+  },
+  perplexity: {
+    name: "Perplexity",
+    logo: "🔍",
+    color: "#20b2aa",
+    baseUrl: "https://api.perplexity.ai",
+    docsUrl: "https://docs.perplexity.ai",
+    keyPlaceholder: "pplx-...",
+    keySignupUrl: "https://www.perplexity.ai/settings/api",
+    description: "Online models with real-time web search built in. Free tier available.",
+    models: [
+      { id: "sonar",               name: "Sonar (Online)",       category: ["chat","analysis"], contextWindow: 128000, free: true,  preloaded: true },
+      { id: "sonar-pro",           name: "Sonar Pro (Online)",   category: ["chat","analysis"], contextWindow: 200000, free: false },
+      { id: "sonar-reasoning",     name: "Sonar Reasoning",      category: ["chat","analysis"], contextWindow: 128000, free: false },
+      { id: "r1-1776",             name: "R1-1776",              category: ["chat","code","analysis"], contextWindow: 128000, free: false },
+    ]
+  },
   puter: {
     name: "Puter (Free)",
     logo: "☁️",
