@@ -9,6 +9,7 @@ import {
 } from '../utils/db'
 import { useAppStore } from './appStore'
 import { PROVIDERS } from '../utils/providers'
+import { buildSystemPrompt } from '../utils/buildSystemPrompt'
 
 export const useChatStore = create((set, get) => ({
   // ─── Conversation list ────────────────────────────────────────
@@ -159,7 +160,7 @@ export const useChatStore = create((set, get) => ({
 // ─── Provider API Caller ──────────────────────────────────────────
 async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
   // Pull agent settings from appStore
-  const { agentSystemPrompt, agentTemperature, agentMaxTokens, agentTopP } = useAppStore.getState()
+  const { agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt, agentTemperature, agentMaxTokens, agentTopP, nvidiaProxyUrl } = useAppStore.getState()
 
   const provider = PROVIDERS[providerId]
 
@@ -168,9 +169,18 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
     .filter(m => m.role === 'user' || m.role === 'assistant')
     .map(m => ({ role: m.role, content: m.content }))
 
+  // Check if this is an image generation model
+  const isImageModel = provider?.models?.find(m => m.id === modelId)?.category?.includes('images')
+  if (isImageModel) {
+    return await callImageAPI({ providerId, modelId, apiKey, prompt: userMessages[userMessages.length - 1]?.content || '' })
+  }
+
+  // Build compiled system prompt from persona settings
+  const compiledPrompt = buildSystemPrompt({ agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt })
+
   // Prepend system prompt if set
-  const history = agentSystemPrompt
-    ? [{ role: 'system', content: agentSystemPrompt }, ...userMessages]
+  const history = compiledPrompt
+    ? [{ role: 'system', content: compiledPrompt }, ...userMessages]
     : userMessages
 
   if (!apiKey && !provider?.local) {
@@ -181,7 +191,7 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
 
   switch (providerId) {
     case 'anthropic': {
-      // Anthropic uses system as a top-level field, not in messages
+      // Anthropic uses system as a top-level field, not in messages array
       const anthropicMessages = history.filter(m => m.role !== 'system')
       const systemContent     = history.find(m => m.role === 'system')?.content || ''
 
@@ -217,8 +227,8 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
         parts: [{ text: m.content }],
       }))
       const body = { contents: geminiMessages }
-      if (agentSystemPrompt) {
-        body.systemInstruction = { parts: [{ text: agentSystemPrompt }] }
+      if (compiledPrompt) {
+        body.systemInstruction = { parts: [{ text: compiledPrompt }] }
       }
       const res = await fetch(url, {
         method: 'POST',
@@ -290,7 +300,6 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
     case 'github':
     case 'hyperbolic':
     case 'perplexity': {
-      const { nvidiaProxyUrl } = useAppStore.getState()
       const baseUrls = {
         openai:     'https://api.openai.com/v1',
         groq:       'https://api.groq.com/openai/v1',
@@ -378,9 +387,91 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
       return data.result?.response || data.choices?.[0]?.message?.content || ''
     }
 
+    case 'fal': {
+      const res = await fetch(`https://fal.run/${modelId}`, {
+        method: 'POST',
+        headers: { Authorization: `Key ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: history[history.length - 1]?.content || '', image_size: 'square_hd', num_images: 1 }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.detail || `Fal.ai error ${res.status}`)
+      }
+      const data = await res.json()
+      return data.choices?.[0]?.message?.content || ''
+    }
+
     default:
       throw new Error(`Provider "${providerId}" not yet supported.`)
   }
+}
+
+async function callImageAPI({ providerId, modelId, apiKey, prompt }) {
+  if (providerId === 'huggingface') {
+    const res = await fetch(`https://api-inference.huggingface.co/models/${modelId}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inputs: prompt }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err?.error || `HuggingFace image error ${res.status}`)
+    }
+    const blob = await res.blob()
+    const url  = URL.createObjectURL(blob)
+    return `__IMAGE__${url}__END_IMAGE__`
+  }
+
+  if (providerId === 'together') {
+    const res = await fetch('https://api.together.xyz/v1/images/generations', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: modelId, prompt, n: 1, width: 1024, height: 1024 }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err?.error?.message || `Together image error ${res.status}`)
+    }
+    const data = await res.json()
+    const imgUrl = data.data?.[0]?.url || data.data?.[0]?.b64_json
+    if (!imgUrl) throw new Error('No image returned')
+    if (imgUrl.startsWith('http')) return `__IMAGE__${imgUrl}__END_IMAGE__`
+    return `__IMAGE__data:image/png;base64,${imgUrl}__END_IMAGE__`
+  }
+
+  if (providerId === 'openai') {
+    const res = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: modelId, prompt, n: 1, size: '1024x1024' }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err?.error?.message || `OpenAI image error ${res.status}`)
+    }
+    const data = await res.json()
+    const imgUrl = data.data?.[0]?.url
+    if (!imgUrl) throw new Error('No image returned')
+    return `__IMAGE__${imgUrl}__END_IMAGE__`
+  }
+
+  if (providerId === 'fal') {
+    const res = await fetch(`https://fal.run/${modelId}`, {
+      method: 'POST',
+      headers: { Authorization: `Key ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, image_size: 'square_hd', num_images: 1 }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err?.detail || `Fal.ai error ${res.status}`)
+    }
+    const data = await res.json()
+    const imgUrl = data.images?.[0]?.url
+    if (!imgUrl) throw new Error('No image returned')
+    return `__IMAGE__${imgUrl}__END_IMAGE__`
+  }
+
+  throw new Error(`Image generation not supported for ${providerId}`)
 }
 
 function getDemoResponse(userMsg) {

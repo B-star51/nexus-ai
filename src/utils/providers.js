@@ -271,6 +271,9 @@ export const PROVIDERS = {
     models: [
       { id: "meta-llama/Llama-3.2-3B-Instruct",  name: "Llama 3.2 3B",   category: ["chat"],        contextWindow: 128000, free: true, preloaded: true },
       { id: "microsoft/Phi-3.5-mini-instruct",   name: "Phi 3.5 Mini",   category: ["chat","code"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "black-forest-labs/FLUX.1-schnell",  name: "FLUX.1 Schnell", category: ["images"],      contextWindow: 0, free: true, preloaded: true },
+      { id: "black-forest-labs/FLUX.1-dev",      name: "FLUX.1 Dev",     category: ["images"],      contextWindow: 0, free: true, preloaded: true },
+      { id: "stabilityai/stable-diffusion-xl-base-1.0", name: "Stable Diffusion XL", category: ["images"], contextWindow: 0, free: true, preloaded: true },
     ]
   },
   together: {
@@ -283,8 +286,27 @@ export const PROVIDERS = {
     keySignupUrl: "https://api.together.ai/settings/api-keys",
     description: "Run fine-tuned and open-source models at scale.",
     models: [
-      { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", name: "Llama 3.1 70B Turbo", category: ["chat","code"], contextWindow: 128000, free: false },
-      { id: "mistralai/Mixtral-8x22B-Instruct-v0.1",        name: "Mixtral 8x22B",        category: ["chat","code"], contextWindow: 65000,  free: false },
+      { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",   name: "Llama 3.1 70B Turbo",     category: ["chat","code"], contextWindow: 128000, free: false },
+      { id: "mistralai/Mixtral-8x22B-Instruct-v0.1",          name: "Mixtral 8x22B",            category: ["chat","code"], contextWindow: 65000,  free: false },
+      { id: "black-forest-labs/FLUX.1-schnell-Free",           name: "FLUX.1 Schnell (Free)",    category: ["images"],      contextWindow: 0, free: true,  preloaded: true },
+      { id: "black-forest-labs/FLUX.1.1-pro",                  name: "FLUX.1.1 Pro",             category: ["images"],      contextWindow: 0, free: false },
+    ]
+  },
+  fal: {
+    name: "Fal.ai",
+    logo: "✨",
+    color: "#f59e0b",
+    baseUrl: "https://fal.run",
+    docsUrl: "https://fal.ai/models",
+    keyPlaceholder: "key:...",
+    keySignupUrl: "https://fal.ai/dashboard/keys",
+    description: "Fast image generation — FLUX, Stable Diffusion, LoRA models. Free credits on signup.",
+    models: [
+      { id: "fal-ai/flux/schnell",        name: "FLUX Schnell",         category: ["images"], contextWindow: 0, free: true,  preloaded: true },
+      { id: "fal-ai/flux/dev",            name: "FLUX Dev",             category: ["images"], contextWindow: 0, free: true,  preloaded: true },
+      { id: "fal-ai/flux-pro",            name: "FLUX Pro",             category: ["images"], contextWindow: 0, free: false },
+      { id: "fal-ai/stable-diffusion-xl", name: "Stable Diffusion XL",  category: ["images"], contextWindow: 0, free: true,  preloaded: true },
+      { id: "fal-ai/flux/schnell/redux",  name: "FLUX Redux (img2img)", category: ["images"], contextWindow: 0, free: true,  preloaded: true },
     ]
   },
   hyperbolic: {

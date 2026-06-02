@@ -24,7 +24,7 @@ function PangolinLogo({ size = 80 }) {
 }
 
 // ─── Quick action chips ─────────────────────────────────────────────────────
-const QUICK_ACTIONS = ['Write code', 'Explain concept', 'Analyze data', 'Creative writing']
+const QUICK_ACTIONS = ['Write code', 'Explain concept', 'Generate image', 'Creative writing']
 
 export default function ChatPage() {
   const {
@@ -450,9 +450,11 @@ export default function ChatPage() {
 
 // ─── Message Bubble ──────────────────────────────────────────────────────────
 function MessageBubble({ msg, onCopy, copied }) {
-  const isUser  = msg.role === 'user'
+  const isUser   = msg.role === 'user'
   const provider = PROVIDERS[msg.providerId]
-  const parts   = parseContent(msg.content)
+  const isImage  = msg.content?.startsWith('__IMAGE__')
+  const imageUrl = isImage ? msg.content.replace('__IMAGE__', '').replace('__END_IMAGE__', '') : null
+  const parts    = isImage ? [] : parseContent(msg.content)
 
   return (
     <motion.div
@@ -509,6 +511,18 @@ function MessageBubble({ msg, onCopy, copied }) {
                   style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--text-muted)' }}
                 />
               ))}
+            </div>
+          ) : isImage ? (
+            <div>
+              <img
+                src={imageUrl}
+                alt="Generated image"
+                style={{ maxWidth: '100%', borderRadius: 12, marginTop: 4, display: 'block' }}
+                onError={e => { e.target.style.display = 'none' }}
+              />
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 6 }}>
+                AI-generated image — right click to save
+              </div>
             </div>
           ) : (
             <div style={{ fontSize: '14px', lineHeight: 1.65, wordBreak: 'break-word' }}>

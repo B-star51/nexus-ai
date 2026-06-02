@@ -34,6 +34,39 @@ Click **Add Model** (top-right button) → select the provider tab → paste you
 
 ---
 
+### Method 1b — GitHub Models (Free GPT-4o, DeepSeek, Llama 4, Grok with your GitHub account)
+
+GitHub Models gives you access to frontier AI models completely free using your existing GitHub account.
+
+**Available free models** (as of 2026):
+
+| Model | Notes |
+|---|---|
+| GPT-4o, GPT-4.1, o3-mini, o4-mini | OpenAI's best models |
+| DeepSeek R1, R1-0528, V3 | Top reasoning & coding |
+| Llama 4 Maverick 17B, Llama 4 Scout 17B | Meta's latest |
+| Llama 3.3 70B, Llama 3.1 405B | Proven workhorses |
+| Phi-4, Phi-4 Mini, Phi-4 Reasoning | Microsoft compact models |
+| MAI-DS-R1 | Microsoft x DeepSeek collaboration |
+| Mistral Small 3.1, Codestral, Ministral 3B | Efficient European models |
+| Grok 3, Grok 3 Mini | xAI models |
+| Cohere Command R+, Command A | RAG-optimised |
+| AI21 Jamba 1.5 Large | 256K context |
+
+**Setup (2 minutes):**
+
+1. Go to [github.com/settings/tokens](https://github.com/settings/tokens)
+2. Click **Generate new token (classic)**
+3. Give it a name (e.g. `NexusAI`) — no scopes needed, just scroll down and click **Generate token**
+4. Copy the token (starts with `ghp_...`)
+5. In NexusAI → **+ Add Model** → **GitHub Models** tab → paste token → **Save Key**
+6. Enable the models you want → close the modal
+
+> **Note:** Rate limits apply — typically 150 requests/day per model for free accounts. Sufficient for personal use.
+> API endpoint used: `https://models.github.ai/inference`
+
+---
+
 ### Method 2 — Ollama (Local Models, 100% Free & Private)
 
 Run any open-source model locally on your own PC — no internet required after download, no API key, completely private.
@@ -218,6 +251,17 @@ npm run deploy     # build + push to GitHub Pages
 ```
 
 **Stack:** React 18 · Vite · TailwindCSS · Zustand · Framer Motion · IndexedDB (idb) · PWA
+
+---
+
+### NVIDIA NIM CORS Proxy (Optional)
+
+NVIDIA's API blocks direct browser requests. To use NVIDIA models, deploy the included Cloudflare Worker:
+
+1. Go to [workers.cloudflare.com](https://workers.cloudflare.com) → Create Worker
+2. Paste the code from `cloudflare-worker/nvidia-proxy.js`
+3. Deploy → copy the Worker URL (e.g. `https://nexusai-nvidia.yourname.workers.dev`)
+4. In NexusAI → **+ Add Model** → **NVIDIA** tab → paste URL + `/v1` → **Save Proxy**
 
 ---
 
