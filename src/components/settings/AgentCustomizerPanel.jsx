@@ -65,7 +65,7 @@ export default function AgentCustomizerPanel({ open, onClose }) {
               zIndex: 1001,
               display: 'flex',
               flexDirection: 'column',
-              overflowY: 'auto',
+              overflow: 'hidden',
             }}
           >
             {/* Header */}
@@ -100,7 +100,7 @@ export default function AgentCustomizerPanel({ open, onClose }) {
               </button>
             </div>
 
-            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 24, flex: 1 }}>
+            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 24, flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
 
               {/* Agent Name */}
               <div>

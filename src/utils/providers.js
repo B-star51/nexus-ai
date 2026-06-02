@@ -143,12 +143,46 @@ export const PROVIDERS = {
     docsUrl: "https://build.nvidia.com/models",
     keyPlaceholder: "nvapi-...",
     keySignupUrl: "https://build.nvidia.com/",
-    description: "Free hosted open-source models via NVIDIA NIM.",
+    description: "Free trial credits for 50+ hosted open-source models via NVIDIA NIM. Sign up at build.nvidia.com — no credit card required.",
     models: [
-      { id: "meta/llama-3.1-405b-instruct",             name: "Llama 3.1 405B",   category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
-      { id: "nvidia/nemotron-4-340b-instruct",           name: "Nemotron 340B",    category: ["chat","code","analysis"], contextWindow: 4096,   free: true, preloaded: true },
-      { id: "mistralai/mixtral-8x7b-instruct-v0.1",     name: "Mixtral 8x7B",     category: ["chat","code"],            contextWindow: 32000,  free: true, preloaded: true },
-      { id: "deepseek-ai/deepseek-r1",                  name: "DeepSeek R1",      category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      // Meta Llama
+      { id: "meta/llama-3.1-405b-instruct",              name: "Llama 3.1 405B Instruct",    category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta/llama-3.1-70b-instruct",               name: "Llama 3.1 70B Instruct",     category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta/llama-3.1-8b-instruct",                name: "Llama 3.1 8B Instruct",      category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta/llama-3.2-3b-instruct",                name: "Llama 3.2 3B Instruct",      category: ["chat"],                   contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta/llama-3.3-70b-instruct",               name: "Llama 3.3 70B Instruct",     category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      { id: "meta/llama-4-scout-17b-16e-instruct",       name: "Llama 4 Scout 17B",          category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      { id: "meta/llama-4-maverick-17b-128e-instruct",   name: "Llama 4 Maverick 17B",       category: ["chat","code","analysis"], contextWindow: 524288, free: true, preloaded: true },
+      // NVIDIA
+      { id: "nvidia/nemotron-4-340b-instruct",           name: "Nemotron 340B Instruct",     category: ["chat","code","analysis"], contextWindow: 4096,   free: true, preloaded: true },
+      { id: "nvidia/nemotron-mini-4b-instruct",          name: "Nemotron Mini 4B",           category: ["chat","code"],            contextWindow: 4096,   free: true, preloaded: true },
+      { id: "nvidia/llama-3.1-nemotron-70b-instruct",    name: "Nemotron 70B Instruct",      category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "nvidia/llama-3.1-nemotron-nano-8b-v1",      name: "Nemotron Nano 8B",           category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      // DeepSeek
+      { id: "deepseek-ai/deepseek-r1",                   name: "DeepSeek R1",                category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek-ai/deepseek-r1-distill-llama-70b", name: "DeepSeek R1 Distill 70B",    category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "deepseek-ai/deepseek-v3",                   name: "DeepSeek V3",                category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      // Mistral / Mixtral
+      { id: "mistralai/mixtral-8x7b-instruct-v0.1",      name: "Mixtral 8x7B",               category: ["chat","code"],            contextWindow: 32000,  free: true, preloaded: true },
+      { id: "mistralai/mixtral-8x22b-instruct-v0.1",     name: "Mixtral 8x22B",              category: ["chat","code","analysis"], contextWindow: 65536,  free: true, preloaded: true },
+      { id: "mistralai/mistral-7b-instruct-v0.3",        name: "Mistral 7B v0.3",            category: ["chat","code"],            contextWindow: 32000,  free: true, preloaded: true },
+      { id: "mistralai/mistral-large-2-instruct",        name: "Mistral Large 2",            category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
+      { id: "mistralai/codestral-22b-instruct-v0.1",     name: "Codestral 22B",              category: ["code"],                   contextWindow: 32000,  free: true, preloaded: true },
+      // Qwen
+      { id: "qwen/qwen2.5-72b-instruct",                 name: "Qwen 2.5 72B",               category: ["chat","code","analysis"], contextWindow: 32000,  free: true, preloaded: true },
+      { id: "qwen/qwen2.5-coder-32b-instruct",           name: "Qwen 2.5 Coder 32B",         category: ["code"],                   contextWindow: 32000,  free: true, preloaded: true },
+      { id: "qwen/qwen3-235b-a22b",                      name: "Qwen3 235B",                 category: ["chat","code","analysis"], contextWindow: 131072, free: true, preloaded: true },
+      // Google
+      { id: "google/gemma-3-27b-it",                     name: "Gemma 3 27B",                category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      { id: "google/gemma-3-12b-it",                     name: "Gemma 3 12B",                category: ["chat","code"],            contextWindow: 131072, free: true, preloaded: true },
+      { id: "google/gemma-2-9b-it",                      name: "Gemma 2 9B",                 category: ["chat"],                   contextWindow: 8192,   free: true, preloaded: true },
+      // Microsoft
+      { id: "microsoft/phi-3-medium-4k-instruct",        name: "Phi-3 Medium 4K",            category: ["chat","code"],            contextWindow: 4096,   free: true, preloaded: true },
+      { id: "microsoft/phi-3.5-moe-instruct",            name: "Phi-3.5 MoE",                category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
+      // AI21 / Cohere / IBM
+      { id: "ai21labs/jamba-1.5-large-instruct",         name: "Jamba 1.5 Large",            category: ["chat","analysis"],        contextWindow: 256000, free: true, preloaded: true },
+      { id: "ibm/granite-34b-code-instruct",             name: "Granite 34B Code",           category: ["code"],                   contextWindow: 8192,   free: true, preloaded: true },
+      { id: "ibm/granite-8b-code-instruct",              name: "Granite 8B Code",            category: ["code"],                   contextWindow: 4096,   free: true, preloaded: true },
     ]
   },
   mistral: {
