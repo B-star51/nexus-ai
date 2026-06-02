@@ -144,6 +144,13 @@ export const useAppStore = create(
       // ─── Proxy URLs ───────────────────────────────────────────────
       nvidiaProxyUrl: '',
       setNvidiaProxyUrl: (url) => set({ nvidiaProxyUrl: url }),
+
+      // ─── Prompt Library ───────────────────────────────────────────
+      savedPrompts: [],  // [{ id, title, text, createdAt }]
+      addPrompt: (title, text) => set((s) => ({
+        savedPrompts: [{ id: crypto.randomUUID(), title: title || text.slice(0, 40), text, createdAt: Date.now() }, ...s.savedPrompts],
+      })),
+      removePrompt: (id) => set((s) => ({ savedPrompts: s.savedPrompts.filter(p => p.id !== id) })),
     }),
     {
       name: 'nexus-ai-app',
@@ -171,6 +178,7 @@ export const useAppStore = create(
         agentCustomTraits:     s.agentCustomTraits,
         agentAvatar:           s.agentAvatar,
         nvidiaProxyUrl:        s.nvidiaProxyUrl,
+        savedPrompts:          s.savedPrompts,
       }),
     }
   )

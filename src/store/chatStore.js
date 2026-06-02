@@ -490,6 +490,8 @@ async function callImageAPI({ providerId, modelId, apiKey, prompt }) {
   throw new Error(`Image generation not supported for ${providerId}`)
 }
 
+export { callProviderAPI }
+
 function getDemoResponse(userMsg) {
   const lower = userMsg.toLowerCase()
   if (lower.includes('hello') || lower.includes('hi')) {

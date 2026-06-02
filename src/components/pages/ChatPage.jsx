@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, MessageSquare, Copy, Check,
-  Zap, Loader2, Code, Send, Search, Terminal, Download, Image,
+  Zap, Loader2, Code, Send, Search, Terminal, Download, Image, BookMarked,
 } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { useChatStore } from '../../store/chatStore'
 import { PROVIDERS } from '../../utils/providers'
 import ModelSelector from '../models/ModelSelector'
+import PromptLibrary from '../chat/PromptLibrary'
+import { exportAsMarkdown, exportAsExcel, exportAsCSV } from '../../utils/exportConversation'
 
 // ─── Pangolin logo for welcome screen ───────────────────────────────────────
 function PangolinLogo({ size = 80 }) {
@@ -44,6 +46,8 @@ export default function ChatPage() {
   const [input, setInput]   = useState('')
   const [copied, setCopied] = useState(null)
   const [mode, setMode]     = useState('chat')
+  const [promptLibOpen, setPromptLibOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const messagesEndRef      = useRef(null)
   const textareaRef         = useRef(null)
 
@@ -99,6 +103,17 @@ export default function ChatPage() {
   }
 
   const showWelcome = messages.length === 0 && !loadingMessages
+  const activeConversation = conversations.find(c => c.id === activeConversationId)
+  const exportTitle = activeConversation?.title || 'conversation'
+  const canExport = messages.length > 0 && !showWelcome
+
+  const handleExport = (fmt) => {
+    if (fmt === 'md')   exportAsMarkdown(messages, exportTitle)
+    if (fmt === 'xlsx') exportAsExcel(messages, exportTitle)
+    if (fmt === 'csv')  exportAsCSV(messages, exportTitle)
+    setExportOpen(false)
+  }
+
   const [hoveredConv, setHoveredConv] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null)
 
@@ -425,8 +440,79 @@ export default function ChatPage() {
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary-10)' }}
                 >
                   <Zap size={14} />
-                  <span className="hidden sm:inline">Vote</span>
+                  <span>Vote</span>
                 </button>
+
+                <button
+                  onClick={() => setPromptLibOpen(true)}
+                  title="Prompt Library"
+                  aria-label="Prompt Library"
+                  style={iconBtnStyle}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-primary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+                >
+                  <BookMarked size={15} />
+                </button>
+
+                {canExport && (
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setExportOpen(o => !o)}
+                      title="Export conversation"
+                      aria-label="Export conversation"
+                      style={iconBtnStyle}
+                      onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-primary)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+                    >
+                      <Download size={15} />
+                    </button>
+
+                    <AnimatePresence>
+                      {exportOpen && (
+                        <>
+                          <div
+                            onClick={() => setExportOpen(false)}
+                            style={{ position: 'fixed', inset: 0, zIndex: 50 }}
+                          />
+                          <motion.div
+                            initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                            transition={{ duration: 0.14 }}
+                            style={{
+                              position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, zIndex: 51,
+                              minWidth: 168, padding: 6, borderRadius: 10,
+                              background: '#1a1a24', border: '1px solid rgba(255,255,255,0.12)',
+                              boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
+                              display: 'flex', flexDirection: 'column', gap: 2,
+                            }}
+                          >
+                            {[
+                              { fmt: 'md',   label: 'Markdown (.md)' },
+                              { fmt: 'xlsx', label: 'Excel (.xlsx)' },
+                              { fmt: 'csv',  label: 'CSV (.csv)' },
+                            ].map(({ fmt, label }) => (
+                              <button
+                                key={fmt}
+                                onClick={() => handleExport(fmt)}
+                                style={{
+                                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                                  padding: '8px 10px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                                  background: 'transparent', color: 'rgba(255,255,255,0.8)',
+                                  fontSize: 13, textAlign: 'left', transition: 'background 0.12s',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                              >
+                                <Download size={13} style={{ color: 'var(--color-primary)' }} /> {label}
+                              </button>
+                            ))}
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
               </div>
 
               {/* Model selector (compact) */}
@@ -457,6 +543,12 @@ export default function ChatPage() {
           </p>
         </div>
       </div>
+
+      <PromptLibrary
+        open={promptLibOpen}
+        onClose={() => setPromptLibOpen(false)}
+        onUse={(text) => setInput(text)}
+      />
     </div>
   )
 }

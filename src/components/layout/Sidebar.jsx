@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, MessageSquare, Cpu, Settings, ChevronLeft, ChevronRight, Zap } from 'lucide-react'
+import { LayoutDashboard, MessageSquare, GitCompare, Cpu, Settings, ChevronLeft, ChevronRight, Zap } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { COLOR_PRESETS } from '../../utils/providers'
 import PangolinLogo from '../common/PangolinLogo'
@@ -7,6 +7,7 @@ import PangolinLogo from '../common/PangolinLogo'
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'chat',      label: 'Chat',      icon: MessageSquare    },
+  { id: 'compare',   label: 'Compare',   icon: GitCompare       },
   { id: 'models',    label: 'Models',    icon: Cpu              },
   { id: 'settings',  label: 'Settings',  icon: Settings         },
 ]
