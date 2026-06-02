@@ -90,6 +90,7 @@ export const useAppStore = create(
       showAddModelModal:    false,
       showThemeCustomizer:  false,
       showVotingModal:      false,
+      showRoundtableModal:  false,
 
       openAddModelModal:    () => set({ showAddModelModal: true }),
       closeAddModelModal:   () => set({ showAddModelModal: false }),
@@ -97,6 +98,8 @@ export const useAppStore = create(
       closeThemeCustomizer: () => set({ showThemeCustomizer: false }),
       openVotingModal:      () => set({ showVotingModal: true }),
       closeVotingModal:     () => set({ showVotingModal: false }),
+      openRoundtableModal:  () => set({ showRoundtableModal: true }),
+      closeRoundtableModal: () => set({ showRoundtableModal: false }),
 
       // ─── API key status per provider ─────────────────────────
       keyStatus: {},
@@ -151,6 +154,19 @@ export const useAppStore = create(
         savedPrompts: [{ id: crypto.randomUUID(), title: title || text.slice(0, 40), text, createdAt: Date.now() }, ...s.savedPrompts],
       })),
       removePrompt: (id) => set((s) => ({ savedPrompts: s.savedPrompts.filter(p => p.id !== id) })),
+
+      // ─── Token usage tracking (per day) ──────────────────────────
+      tokenUsage: {},        // { '2026-06-02': 12345 }
+      dailyTokenCap: 0,      // 0 = unlimited
+      setDailyTokenCap: (cap) => set({ dailyTokenCap: cap }),
+      addTokenUsage: (count) => set((s) => {
+        const day = new Date().toISOString().slice(0, 10)
+        return { tokenUsage: { ...s.tokenUsage, [day]: (s.tokenUsage[day] || 0) + (count || 0) } }
+      }),
+      getTodayTokens: () => {
+        const day = new Date().toISOString().slice(0, 10)
+        return get().tokenUsage[day] || 0
+      },
     }),
     {
       name: 'nexus-ai-app',
@@ -179,6 +195,8 @@ export const useAppStore = create(
         agentAvatar:           s.agentAvatar,
         nvidiaProxyUrl:        s.nvidiaProxyUrl,
         savedPrompts:          s.savedPrompts,
+        tokenUsage:            s.tokenUsage,
+        dailyTokenCap:         s.dailyTokenCap,
       }),
     }
   )

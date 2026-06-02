@@ -6,6 +6,7 @@ import Header from './Header'
 import { useAppStore } from '../../store/appStore'
 import AddModelModal from '../models/AddModelModal'
 import ModelVotingModal from '../models/ModelVotingModal'
+import ModelRoundtableModal from '../models/ModelRoundtableModal'
 import ThemeCustomizer from '../settings/ThemeCustomizer'
 
 function MobileBottomNav() {
@@ -67,6 +68,7 @@ export default function Layout({ children }) {
     showAddModelModal, closeAddModelModal,
     showThemeCustomizer, closeThemeCustomizer,
     showVotingModal, closeVotingModal,
+    showRoundtableModal, closeRoundtableModal,
     activePage,
   } = useAppStore()
 
@@ -152,9 +154,10 @@ export default function Layout({ children }) {
       </div>
 
       {/* Global modals */}
-      <AddModelModal    open={showAddModelModal}    onClose={closeAddModelModal}    />
-      <ModelVotingModal open={showVotingModal}      onClose={closeVotingModal}      />
-      <ThemeCustomizer  open={showThemeCustomizer}  onClose={closeThemeCustomizer}  />
+      <AddModelModal        open={showAddModelModal}    onClose={closeAddModelModal}    />
+      <ModelVotingModal     open={showVotingModal}      onClose={closeVotingModal}      />
+      <ModelRoundtableModal open={showRoundtableModal}  onClose={closeRoundtableModal}  />
+      <ThemeCustomizer      open={showThemeCustomizer}  onClose={closeThemeCustomizer}  />
     </div>
   )
 }

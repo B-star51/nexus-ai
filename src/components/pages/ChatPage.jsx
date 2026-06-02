@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, MessageSquare, Copy, Check,
-  Zap, Loader2, Code, Send, Search, Terminal, Download, Image, BookMarked,
+  Zap, Loader2, Code, Send, Search, Terminal, Download, Image, BookMarked, Users,
 } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { useChatStore } from '../../store/chatStore'
@@ -31,7 +31,7 @@ const QUICK_ACTIONS = ['Write code', 'Explain concept', 'Generate image', 'Creat
 export default function ChatPage() {
   const {
     activeModels, selectedProviderId, selectedModelId, selectModel,
-    providerKeys, openVotingModal, openAddModelModal,
+    providerKeys, openVotingModal, openRoundtableModal, openAddModelModal,
     agentName,
   } = useAppStore()
 
@@ -383,7 +383,6 @@ export default function ChatPage() {
                     ? `Message ${agentName}...`
                     : `Message ${agentName}... (select a model below)`
                 }
-                disabled={sending}
                 rows={1}
                 style={{
                   flex: 1, background: 'transparent', border: 'none', outline: 'none',
@@ -441,6 +440,26 @@ export default function ChatPage() {
                 >
                   <Zap size={14} />
                   <span>Vote</span>
+                </button>
+
+                <button
+                  onClick={openRoundtableModal}
+                  title="Roundtable — models discuss with each other and you can join in"
+                  aria-label="Roundtable discussion"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+                    border: '1px solid var(--color-primary-30)',
+                    background: 'var(--color-primary-10)',
+                    color: 'var(--color-primary)',
+                    fontSize: 12, fontWeight: 600, flexShrink: 0,
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-primary-20)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary-10)' }}
+                >
+                  <Users size={14} />
+                  <span>Roundtable</span>
                 </button>
 
                 <button

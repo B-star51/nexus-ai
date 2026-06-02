@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react'
-import { Plus, Palette, Menu, BarChart3, Grid3X3, MessageSquare, Code2, Image, Sparkles, HardDrive, Bot } from 'lucide-react'
+import { Plus, Palette, Menu, BarChart3, Grid3X3, MessageSquare, Code2, Image, Sparkles, HardDrive, Bot, Activity } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { CATEGORIES, PROVIDERS } from '../../utils/providers'
 import { getStorageUsage } from '../../utils/db'
 import ModelSelector from '../models/ModelSelector'
 import AgentCustomizerPanel from '../settings/AgentCustomizerPanel'
+
+function formatTokens(n) {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`
+  return String(n)
+}
 
 const CATEGORY_ICONS = {
   Grid3X3, MessageSquare, Code2, Image, BarChart3, Sparkles,
@@ -23,7 +29,13 @@ export default function Header({ onMobileMenuOpen }) {
     activeCategory, setActiveCategory,
     openAddModelModal, openThemeCustomizer,
     selectedProviderId, selectedModelId, activeModels,
+    tokenUsage, dailyTokenCap,
   } = useAppStore()
+
+  const todayKey    = new Date().toISOString().slice(0, 10)
+  const todayTokens = tokenUsage?.[todayKey] || 0
+  const overCap     = dailyTokenCap > 0 && todayTokens >= dailyTokenCap
+  const nearCap     = dailyTokenCap > 0 && todayTokens >= dailyTokenCap * 0.8
 
   const [storageInfo, setStorageInfo]       = useState(null)
   const [agentPanelOpen, setAgentPanelOpen] = useState(false)
@@ -125,6 +137,24 @@ export default function Header({ onMobileMenuOpen }) {
 
         {/* Right actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {/* Token usage tracker */}
+          <div
+            title={dailyTokenCap > 0
+              ? `${todayTokens.toLocaleString()} / ${dailyTokenCap.toLocaleString()} tokens today (cap set in Settings)`
+              : `${todayTokens.toLocaleString()} tokens used today — set a daily cap in Settings`}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '4px 9px', borderRadius: 99, cursor: 'default',
+              fontSize: 11, fontWeight: 600,
+              background: overCap ? 'rgba(239,68,68,0.15)' : nearCap ? 'rgba(251,191,36,0.12)' : 'var(--color-primary-10)',
+              border: `1px solid ${overCap ? 'rgba(239,68,68,0.4)' : nearCap ? 'rgba(251,191,36,0.3)' : 'var(--color-primary-20)'}`,
+              color: overCap ? '#f87171' : nearCap ? '#fbbf24' : 'var(--color-primary)',
+            }}
+          >
+            <Activity size={12} />
+            <span>{formatTokens(todayTokens)}{dailyTokenCap > 0 ? ` / ${formatTokens(dailyTokenCap)}` : ''}</span>
+          </div>
+
           {/* Storage indicator */}
           {storageInfo && (
             <div

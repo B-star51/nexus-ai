@@ -122,6 +122,12 @@ export const useChatStore = create((set, get) => ({
       const responseText = await callProviderAPI({ providerId, modelId, apiKey, messages: allMessages })
       const finalMsg = { ...assistantMsg, content: responseText, streaming: false }
       await saveMessage(finalMsg)
+      // Rough token estimate (~4 chars/token) for daily tracking
+      if (!responseText?.startsWith('__IMAGE__')) {
+        const promptChars = allMessages.reduce((n, m) => n + (m.content?.length || 0), 0)
+        const estTokens = Math.ceil((promptChars + responseText.length) / 4)
+        useAppStore.getState().addTokenUsage(estTokens)
+      }
       set((s) => ({
         messages: s.messages.map(m => m.id === assistantMsg.id ? finalMsg : m),
         sending: false,

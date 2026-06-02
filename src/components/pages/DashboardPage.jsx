@@ -133,10 +133,18 @@ function ProviderCard({ providerId, provider, activeCount }) {
 }
 
 export default function DashboardPage() {
-  const { activeModels, openAddModelModal, setActivePage } = useAppStore()
-  const { conversations, loadConversations } = useChatStore()
+  const { activeModels, openAddModelModal, setActivePage, setActiveCategory } = useAppStore()
+  const { conversations, loadConversations, newConversation } = useChatStore()
 
   useEffect(() => { loadConversations() }, [])
+
+  // Quick Start: pick category, start a fresh chat, go to chat
+  const handleQuickStart = async (categoryId) => {
+    if (activeModels.length === 0) { openAddModelModal(); return }
+    setActiveCategory(categoryId)
+    await newConversation()
+    setActivePage('chat')
+  }
 
   const totalModels    = activeModels.length
   const totalConvs     = conversations.length
@@ -263,7 +271,7 @@ export default function DashboardPage() {
                 <motion.button
                   key={id}
                   whileHover={{ y: -2 }}
-                  onClick={() => setActivePage('chat')}
+                  onClick={() => handleQuickStart(id)}
                   style={{
                     padding:         '14px',
                     borderRadius:    '10px',

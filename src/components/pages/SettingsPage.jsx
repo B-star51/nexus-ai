@@ -15,10 +15,13 @@ const SECTIONS = [
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('api')
-  const { openThemeCustomizer, themePreset, setTheme } = useAppStore()
+  const { openThemeCustomizer, themePreset, setTheme, dailyTokenCap, setDailyTokenCap, tokenUsage } = useAppStore()
   const [storageInfo, setStorageInfo] = useState(null)
   const [convCount, setConvCount]     = useState(0)
   const [clearing, setClearing]       = useState(false)
+  const [capInput, setCapInput]       = useState(dailyTokenCap ? String(dailyTokenCap) : '')
+
+  const todayTokens = tokenUsage?.[new Date().toISOString().slice(0, 10)] || 0
 
   useEffect(() => {
     getStorageUsage().then(setStorageInfo)
@@ -213,6 +216,49 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
+
+            {/* Daily token cap */}
+            <div style={{
+              padding: '16px', borderRadius: 10, marginBottom: 24,
+              border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)',
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Daily Token Cap</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
+                Set a soft daily limit to track usage. Today: <strong style={{ color: 'var(--color-primary)' }}>{todayTokens.toLocaleString()} tokens</strong>
+                {dailyTokenCap > 0 && ` of ${dailyTokenCap.toLocaleString()}`}
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="number"
+                  value={capInput}
+                  onChange={e => setCapInput(e.target.value)}
+                  placeholder="e.g. 100000 (0 = unlimited)"
+                  style={{
+                    flex: 1, minWidth: 180, padding: '9px 12px', borderRadius: 8, boxSizing: 'border-box',
+                    border: '1px solid var(--border)', background: 'var(--bg-elevated)',
+                    color: 'var(--text-primary)', fontSize: 13, outline: 'none',
+                  }}
+                />
+                <button className="btn-primary" onClick={() => setDailyTokenCap(parseInt(capInput) || 0)} style={{ fontSize: 13 }}>
+                  Save Cap
+                </button>
+                {dailyTokenCap > 0 && (
+                  <button className="btn-secondary" onClick={() => { setDailyTokenCap(0); setCapInput('') }} style={{ fontSize: 13 }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+              {[25000, 100000, 500000].map(v => (
+                <button key={v}
+                  onClick={() => { setCapInput(String(v)); setDailyTokenCap(v) }}
+                  style={{
+                    marginTop: 10, marginRight: 6, padding: '4px 10px', borderRadius: 99, fontSize: 11, cursor: 'pointer',
+                    border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)',
+                  }}>
+                  {v >= 1000 ? `${v / 1000}K` : v}/day
+                </button>
+              ))}
+            </div>
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
