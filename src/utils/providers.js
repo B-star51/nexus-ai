@@ -162,6 +162,8 @@ export const PROVIDERS = {
       { id: "nvidia/llama-3.1-nemotron-70b-instruct",    name: "Nemotron 70B Instruct",      category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
       { id: "nvidia/llama-3.1-nemotron-nano-8b-v1",      name: "Nemotron Nano 8B",           category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
       // DeepSeek
+      { id: "deepseek-ai/deepseek-v4-flash",              name: "DeepSeek V4 Flash",          category: ["chat","code","analysis"], contextWindow: 1000000, free: true, preloaded: true },
+      { id: "deepseek-ai/deepseek-v4-pro",               name: "DeepSeek V4 Pro",            category: ["chat","code","analysis"], contextWindow: 1000000, free: true, preloaded: true },
       { id: "deepseek-ai/deepseek-r1",                   name: "DeepSeek R1",                category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
       { id: "deepseek-ai/deepseek-r1-distill-llama-70b", name: "DeepSeek R1 Distill 70B",    category: ["chat","code","analysis"], contextWindow: 128000, free: true, preloaded: true },
       { id: "deepseek-ai/deepseek-v3",                   name: "DeepSeek V3",                category: ["chat","code"],            contextWindow: 128000, free: true, preloaded: true },
