@@ -166,7 +166,7 @@ export const useChatStore = create((set, get) => ({
 // ─── Provider API Caller ──────────────────────────────────────────
 async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
   // Pull agent settings from appStore
-  const { agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt, agentTemperature, agentMaxTokens, agentTopP, nvidiaProxyUrl } = useAppStore.getState()
+  const { agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt, agentTemperature, agentMaxTokens, agentTopP, nvidiaProxyUrl, webSearchEnabled } = useAppStore.getState()
 
   const provider = PROVIDERS[providerId]
 
@@ -179,6 +179,21 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
   const isImageModel = provider?.models?.find(m => m.id === modelId)?.category?.includes('images')
   if (isImageModel) {
     return await callImageAPI({ providerId, modelId, apiKey, prompt: userMessages[userMessages.length - 1]?.content || '' })
+  }
+
+  // ── Web search augmentation (gives ANY model live internet access) ──
+  // Skip for Gemini -search models (they have native grounding)
+  if (webSearchEnabled && !modelId.includes('-search') && userMessages.length) {
+    const lastUser = [...userMessages].reverse().find(m => m.role === 'user')
+    if (lastUser?.content) {
+      try {
+        const results = await webSearch(lastUser.content)
+        if (results) {
+          const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+          lastUser.content = `Today's date is ${today}. Here are live web search results for the question — use them to give a current, accurate answer and cite sources:\n\n${results}\n\n---\nQuestion: ${lastUser.content}`
+        }
+      } catch { /* search failed — continue without it */ }
+    }
   }
 
   // Build compiled system prompt from persona settings
@@ -513,6 +528,25 @@ async function callImageAPI({ providerId, modelId, apiKey, prompt }) {
 }
 
 export { callProviderAPI }
+
+// ── Free web search via Jina (no API key, browser-friendly) ──
+async function webSearch(query) {
+  const url = `https://s.jina.ai/?q=${encodeURIComponent(query)}`
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json', 'X-Respond-With': 'no-content' },
+  })
+  if (!res.ok) throw new Error(`search ${res.status}`)
+  const raw = await res.text()
+  try {
+    const data = JSON.parse(raw)
+    if (data?.data?.length) {
+      return data.data.slice(0, 5).map((r, i) =>
+        `[${i + 1}] ${r.title || ''}\n${r.url || ''}\n${(r.description || r.content || '').slice(0, 300)}`
+      ).join('\n\n')
+    }
+  } catch { /* not JSON — fall through */ }
+  return raw ? raw.slice(0, 2500) : ''
+}
 
 function getDemoResponse(userMsg) {
   const lower = userMsg.toLowerCase()

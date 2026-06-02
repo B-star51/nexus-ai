@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, MessageSquare, Copy, Check,
-  Zap, Loader2, Code, Send, Search, Terminal, Download, Image, BookMarked, Users,
+  Zap, Loader2, Code, Send, Search, Terminal, Download, Image, BookMarked, Users, Globe,
 } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { useChatStore } from '../../store/chatStore'
@@ -32,7 +32,7 @@ export default function ChatPage() {
   const {
     activeModels, selectedProviderId, selectedModelId, selectModel,
     providerKeys, openVotingModal, openRoundtableModal, openAddModelModal,
-    agentName,
+    agentName, webSearchEnabled, toggleWebSearch,
   } = useAppStore()
 
   const {
@@ -460,6 +460,23 @@ export default function ChatPage() {
                 >
                   <Users size={14} />
                   <span>Roundtable</span>
+                </button>
+
+                <button
+                  onClick={toggleWebSearch}
+                  title={webSearchEnabled ? 'Web search ON — models can search the internet' : 'Turn on web search for any model'}
+                  aria-label="Toggle web search"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+                    border: webSearchEnabled ? '1px solid #38bdf8' : '1px solid rgba(255,255,255,0.12)',
+                    background: webSearchEnabled ? 'rgba(56,189,248,0.15)' : 'transparent',
+                    color: webSearchEnabled ? '#38bdf8' : 'rgba(255,255,255,0.45)',
+                    fontSize: 12, fontWeight: 600, flexShrink: 0, transition: 'all 0.15s',
+                  }}
+                >
+                  <Globe size={14} />
+                  <span>{webSearchEnabled ? 'Web ON' : 'Web'}</span>
                 </button>
 
                 <button

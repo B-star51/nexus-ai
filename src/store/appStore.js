@@ -155,6 +155,10 @@ export const useAppStore = create(
       })),
       removePrompt: (id) => set((s) => ({ savedPrompts: s.savedPrompts.filter(p => p.id !== id) })),
 
+      // ─── Web search (works for ALL models via Jina) ──────────────
+      webSearchEnabled: false,
+      toggleWebSearch: () => set((s) => ({ webSearchEnabled: !s.webSearchEnabled })),
+
       // ─── Token usage tracking (per day) ──────────────────────────
       tokenUsage: {},        // { '2026-06-02': 12345 }
       dailyTokenCap: 0,      // 0 = unlimited
