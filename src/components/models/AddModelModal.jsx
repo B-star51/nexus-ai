@@ -415,25 +415,30 @@ async function testProviderConnection(providerId, apiKey) {
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
     },
+    // NVIDIA, SambaNova, Cerebras, GitHub, Together block browser CORS — validate format only
     nvidia: async () => {
-      // /v1/models is CORS-blocked from browsers — use a tiny completion call instead
-      const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'meta/llama-3.1-8b-instruct',
-          messages: [{ role: 'user', content: 'hi' }],
-          max_tokens: 1,
-        }),
+      if (!apiKey.startsWith('nvapi-') || apiKey.length < 40)
+        throw new Error('Invalid key — NVIDIA keys start with nvapi-')
+    },
+    sambanova: async () => {
+      if (apiKey.length < 20)
+        throw new Error('Key too short')
+    },
+    cerebras: async () => {
+      if (!apiKey.startsWith('csk-') || apiKey.length < 20)
+        throw new Error('Invalid key — Cerebras keys start with csk-')
+    },
+    github: async () => {
+      const res = await fetch('https://api.github.com/user', {
+        headers: { Authorization: `Bearer ${apiKey}` },
       })
-      // 401 = bad key, anything else (200, 400, 422) means key was accepted
-      if (res.status === 401) throw new Error('Invalid API key')
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
     },
     together: async () => {
-      const res = await fetch('https://api.together.xyz/v1/models', {
+      if (apiKey.length < 20) throw new Error('Key too short')
+    },
+    openrouter: async () => {
+      const res = await fetch('https://openrouter.ai/api/v1/models', {
         headers: { Authorization: `Bearer ${apiKey}` },
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
