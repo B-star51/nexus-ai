@@ -529,23 +529,42 @@ async function callImageAPI({ providerId, modelId, apiKey, prompt }) {
 
 export { callProviderAPI }
 
-// ── Free web search via Jina (no API key, browser-friendly) ──
+// ── Free web search — no API key, CORS-friendly (DuckDuckGo + Wikipedia) ──
 async function webSearch(query) {
-  const url = `https://s.jina.ai/?q=${encodeURIComponent(query)}`
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/json', 'X-Respond-With': 'no-content' },
-  })
-  if (!res.ok) throw new Error(`search ${res.status}`)
-  const raw = await res.text()
+  const parts = []
+
+  // 1) DuckDuckGo Instant Answer — abstracts, definitions, facts
   try {
-    const data = JSON.parse(raw)
-    if (data?.data?.length) {
-      return data.data.slice(0, 5).map((r, i) =>
-        `[${i + 1}] ${r.title || ''}\n${r.url || ''}\n${(r.description || r.content || '').slice(0, 300)}`
-      ).join('\n\n')
+    const ddgRes = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`)
+    if (ddgRes.ok) {
+      const ddg = await ddgRes.json()
+      if (ddg.AbstractText) {
+        parts.push(`${ddg.Heading || 'Summary'}: ${ddg.AbstractText} (source: ${ddg.AbstractURL || 'DuckDuckGo'})`)
+      }
+      if (ddg.Answer) parts.push(`Answer: ${ddg.Answer}`)
+      if (ddg.Definition) parts.push(`Definition: ${ddg.Definition}`)
+      const topics = (ddg.RelatedTopics || [])
+        .filter(t => t.Text)
+        .slice(0, 5)
+        .map(t => `• ${t.Text}`)
+      if (topics.length) parts.push(`Related:\n${topics.join('\n')}`)
     }
-  } catch { /* not JSON — fall through */ }
-  return raw ? raw.slice(0, 2500) : ''
+  } catch { /* ignore */ }
+
+  // 2) Wikipedia — search snippets (kept current, good for facts/people/events)
+  try {
+    const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=4`)
+    if (wikiRes.ok) {
+      const wiki = await wikiRes.json()
+      const hits = wiki?.query?.search || []
+      for (const h of hits) {
+        const snippet = (h.snippet || '').replace(/<[^>]+>/g, '').trim()
+        if (snippet) parts.push(`Wikipedia — ${h.title}: ${snippet} (https://en.wikipedia.org/wiki/${encodeURIComponent(h.title.replace(/ /g, '_'))})`)
+      }
+    }
+  } catch { /* ignore */ }
+
+  return parts.length ? parts.join('\n\n') : ''
 }
 
 function getDemoResponse(userMsg) {
