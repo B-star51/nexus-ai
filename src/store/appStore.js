@@ -202,6 +202,12 @@ export const useAppStore = create(
       setEmailSignature:  (v) => set({ emailSignature: v }),
       setEmailBanner:     (v) => set({ emailBannerDataUrl: v }),
       setEmailTone:       (v) => set({ emailTone: v }),
+
+      // ─── Email Server connection (live mailbox via backend) ──────
+      emailServerUrl:   '',
+      emailServerToken: '',
+      setEmailServerUrl:   (v) => set({ emailServerUrl: v }),
+      setEmailServerToken: (v) => set({ emailServerToken: v }),
     }),
     {
       name: 'nexus-ai-app',
@@ -242,6 +248,8 @@ export const useAppStore = create(
         emailSignature:        s.emailSignature,
         emailBannerDataUrl:    s.emailBannerDataUrl,
         emailTone:             s.emailTone,
+        emailServerUrl:        s.emailServerUrl,
+        emailServerToken:      s.emailServerToken,
       }),
     }
   )

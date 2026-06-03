@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Key, Palette, Database, Shield, Info, Trash2, Download, HardDrive, RefreshCw, Briefcase, BarChart3, Check, TrendingUp, Headphones, Megaphone, Scale, X, Sliders, Mail, Upload, Send, FileText, Tag, Bug, ArrowRight } from 'lucide-react'
+import { Key, Palette, Database, Shield, Info, Trash2, Download, HardDrive, RefreshCw, Briefcase, BarChart3, Check, TrendingUp, Headphones, Megaphone, Scale, X, Sliders, Mail, Upload, Send, FileText, Tag, Bug, ArrowRight, Plug, Loader2 } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { getStorageUsage, getAllConversations, deleteConversation } from '../../utils/db'
+import { checkStatus } from '../../utils/emailServer'
 import APISettings from '../settings/APISettings'
 import ThemeCustomizer from '../settings/ThemeCustomizer'
 import { COLOR_PRESETS, PROVIDERS } from '../../utils/providers'
@@ -69,6 +70,7 @@ export default function SettingsPage() {
     setAgentTaskFocus, setAgentPersonality, setAgentCommStyle, setAgentResponseLength, setAgentCustomTraits,
     emailRules, setEmailRules, emailSignature, setEmailSignature, emailBannerDataUrl, setEmailBanner,
     emailTone, setEmailTone, addPrompt, setActivePage,
+    emailServerUrl, setEmailServerUrl, emailServerToken, setEmailServerToken,
   } = useAppStore()
   const [templateState, setTemplateState] = useState({}) // { [id]: 'used' | 'saved' }
   const [appliedRole, setAppliedRole] = useState(null)
@@ -78,6 +80,22 @@ export default function SettingsPage() {
   const [convCount, setConvCount]     = useState(0)
   const [clearing, setClearing]       = useState(false)
   const [capInput, setCapInput]       = useState(dailyTokenCap ? String(dailyTokenCap) : '')
+  const [emailTest, setEmailTest]     = useState(null)   // { ok, msg } | null
+  const [emailTesting, setEmailTesting] = useState(false)
+
+  const handleTestEmailServer = async () => {
+    if (emailTesting) return
+    setEmailTesting(true)
+    setEmailTest(null)
+    try {
+      const st = await checkStatus()
+      setEmailTest({ ok: true, msg: `Connected (${st.provider}/${st.model})` })
+    } catch (err) {
+      setEmailTest({ ok: false, msg: err.message || 'Connection failed' })
+    } finally {
+      setEmailTesting(false)
+    }
+  }
 
   useEffect(() => { setJinaInput(jinaApiKey || '') }, [jinaApiKey])
 
@@ -634,6 +652,55 @@ export default function SettingsPage() {
             <button className="btn-primary" onClick={() => setActivePage('email')} style={{ fontSize: 13, marginBottom: 32 }}>
               <Mail size={14} /> Open Email Assistant <ArrowRight size={14} />
             </button>
+
+            {/* ── Live Mailbox Connection ── */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Plug size={16} style={{ color: 'var(--color-primary)' }} />
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>Live Mailbox Connection</h3>
+            </div>
+            <p style={{ margin: '0 0 16px', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              Runs the NexusAI Email Server (see <strong>email-server/README.md</strong>). It connects to your mailbox via
+              IMAP/SMTP and uses your AI key to triage and draft replies. Browser-only apps can't access mailboxes directly,
+              so this small server does it for you.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 12 }}>
+              <Field label="Server URL">
+                <input
+                  type="text" value={emailServerUrl}
+                  onChange={e => { setEmailServerUrl(e.target.value); setEmailTest(null) }}
+                  placeholder="http://localhost:8787"
+                  style={fieldInputStyle}
+                />
+              </Field>
+              <Field label="Access Token">
+                <input
+                  type="password" value={emailServerToken}
+                  onChange={e => { setEmailServerToken(e.target.value); setEmailTest(null) }}
+                  placeholder="Bearer token"
+                  style={{ ...fieldInputStyle, fontFamily: 'monospace' }}
+                />
+              </Field>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 32 }}>
+              <button
+                className="btn-secondary"
+                onClick={handleTestEmailServer}
+                disabled={!emailServerUrl || !emailServerToken || emailTesting}
+                style={{ fontSize: 13 }}
+              >
+                {emailTesting
+                  ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Testing...</>
+                  : <><Plug size={14} /> Test Connection</>}
+              </button>
+              {emailTest && (
+                <span style={{ fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 5, color: emailTest.ok ? '#4ade80' : '#f87171' }}>
+                  {emailTest.ok ? <Check size={14} /> : <X size={14} />}
+                  {emailTest.msg}
+                </span>
+              )}
+            </div>
 
             {/* ── Team Templates ── */}
             <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700 }}>Team Templates</h3>
