@@ -173,6 +173,25 @@ export const useAppStore = create(
         const day = new Date().toISOString().slice(0, 10)
         return get().tokenUsage[day] || 0
       },
+
+      // ─── Business Mode ───────────────────────────────────────────
+      businessMode: false,
+      toggleBusinessMode: () => set((s) => ({ businessMode: !s.businessMode })),
+      company: { name: '', industry: '', brandVoice: '', products: '', website: '', logoDataUrl: '' },
+      setCompany: (patch) => set((s) => ({ company: { ...s.company, ...patch } })),
+
+      // Per-model token usage for budgeting  { 'providerId:modelId': totalTokens }
+      modelUsage: {},
+      addModelUsage: (key, count) => set((s) => ({ modelUsage: { ...s.modelUsage, [key]: (s.modelUsage[key] || 0) + (count || 0) } })),
+
+      // Per-day per-model detailed usage  { '2026-06-03': { 'providerId:modelId': tokens } }
+      usageDetail: {},
+      addUsageDetail: (modelKey, count) => set((s) => {
+        const day = new Date().toISOString().slice(0,10)
+        const dayMap = { ...(s.usageDetail[day] || {}) }
+        dayMap[modelKey] = (dayMap[modelKey] || 0) + (count || 0)
+        return { usageDetail: { ...s.usageDetail, [day]: dayMap } }
+      }),
     }),
     {
       name: 'nexus-ai-app',
@@ -205,6 +224,10 @@ export const useAppStore = create(
         dailyTokenCap:         s.dailyTokenCap,
         webSearchEnabled:      s.webSearchEnabled,
         jinaApiKey:            s.jinaApiKey,
+        businessMode:          s.businessMode,
+        company:               s.company,
+        modelUsage:            s.modelUsage,
+        usageDetail:           s.usageDetail,
       }),
     }
   )

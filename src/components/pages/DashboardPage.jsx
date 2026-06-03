@@ -133,7 +133,7 @@ function ProviderCard({ providerId, provider, activeCount }) {
 }
 
 export default function DashboardPage() {
-  const { activeModels, openAddModelModal, setActivePage, setActiveCategory } = useAppStore()
+  const { activeModels, openAddModelModal, setActivePage, setActiveCategory, businessMode, company } = useAppStore()
   const { conversations, loadConversations, newConversation } = useChatStore()
 
   useEffect(() => { loadConversations() }, [])
@@ -190,6 +190,25 @@ export default function DashboardPage() {
           }}
         />
         <div style={{ position: 'relative' }}>
+          {businessMode && (
+            <span
+              style={{
+                display:         'inline-flex',
+                alignItems:      'center',
+                gap:             '6px',
+                fontSize:        '11px',
+                fontWeight:      600,
+                padding:         '3px 10px',
+                borderRadius:    20,
+                marginBottom:    10,
+                backgroundColor: 'var(--color-primary-10)',
+                border:          '1px solid var(--color-primary-20)',
+                color:           'var(--color-primary)',
+              }}
+            >
+              🏢 Business Mode{company.name ? ` — ${company.name}` : ''}
+            </span>
+          )}
           <h1
             style={{
               margin:     0,

@@ -126,7 +126,10 @@ export const useChatStore = create((set, get) => ({
       if (!responseText?.startsWith('__IMAGE__')) {
         const promptChars = allMessages.reduce((n, m) => n + (m.content?.length || 0), 0)
         const estTokens = Math.ceil((promptChars + responseText.length) / 4)
-        useAppStore.getState().addTokenUsage(estTokens)
+        const store = useAppStore.getState()
+        store.addTokenUsage(estTokens)
+        store.addModelUsage(`${providerId}:${modelId}`, estTokens)
+        store.addUsageDetail(`${providerId}:${modelId}`, estTokens)
       }
       set((s) => ({
         messages: s.messages.map(m => m.id === assistantMsg.id ? finalMsg : m),
@@ -166,7 +169,7 @@ export const useChatStore = create((set, get) => ({
 // ─── Provider API Caller ──────────────────────────────────────────
 async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
   // Pull agent settings from appStore
-  const { agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt, agentTemperature, agentMaxTokens, agentTopP, nvidiaProxyUrl, webSearchEnabled } = useAppStore.getState()
+  const { agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt, agentTemperature, agentMaxTokens, agentTopP, nvidiaProxyUrl, webSearchEnabled, businessMode, company } = useAppStore.getState()
 
   const provider = PROVIDERS[providerId]
 
@@ -197,7 +200,7 @@ async function callProviderAPI({ providerId, modelId, apiKey, messages }) {
   }
 
   // Build compiled system prompt from persona settings
-  const compiledPrompt = buildSystemPrompt({ agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt })
+  const compiledPrompt = buildSystemPrompt({ agentName, agentUserName, agentPersonality, agentTaskFocus, agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt, business: { enabled: businessMode, company } })
 
   // Prepend system prompt if set
   const history = compiledPrompt

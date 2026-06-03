@@ -1,6 +1,7 @@
 export function buildSystemPrompt({
   agentName, agentUserName, agentPersonality, agentTaskFocus,
   agentCommStyle, agentResponseLength, agentCustomTraits, agentSystemPrompt,
+  business,
 }) {
   const parts = []
 
@@ -57,5 +58,17 @@ export function buildSystemPrompt({
   // Manual system prompt override (appended)
   if (agentSystemPrompt?.trim()) parts.push(agentSystemPrompt.trim())
 
-  return parts.filter(Boolean).join(' ')
+  // Business Mode — company context prepended to the top of the prompt
+  let companyBlock = ''
+  if (business?.enabled && business.company?.name?.trim()) {
+    const c = business.company
+    const lines = [`You are an AI assistant representing ${c.name}${c.industry ? `, a company in the ${c.industry} industry` : ''}.`]
+    if (c.products?.trim())   lines.push(`Products/services: ${c.products.trim()}.`)
+    if (c.brandVoice?.trim()) lines.push(`Always communicate in this brand voice: ${c.brandVoice.trim()}.`)
+    if (c.website?.trim())    lines.push(`Company website: ${c.website.trim()}.`)
+    lines.push(`Represent the company professionally and stay aligned with its brand and values in every response.`)
+    companyBlock = lines.join(' ')
+  }
+
+  return [companyBlock, ...parts].filter(Boolean).join(' ')
 }

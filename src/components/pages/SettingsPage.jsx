@@ -1,21 +1,63 @@
 import { useState, useEffect } from 'react'
-import { Key, Palette, Database, Shield, Info, Trash2, Download, HardDrive, RefreshCw } from 'lucide-react'
+import { Key, Palette, Database, Shield, Info, Trash2, Download, HardDrive, RefreshCw, Briefcase, BarChart3, Check, TrendingUp, Headphones, Megaphone, Scale, X } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { getStorageUsage, getAllConversations, deleteConversation } from '../../utils/db'
 import APISettings from '../settings/APISettings'
 import ThemeCustomizer from '../settings/ThemeCustomizer'
-import { COLOR_PRESETS } from '../../utils/providers'
+import { COLOR_PRESETS, PROVIDERS } from '../../utils/providers'
 
 const SECTIONS = [
-  { id: 'api',      label: 'API Keys',    icon: Key      },
-  { id: 'theme',    label: 'Theme',       icon: Palette  },
-  { id: 'data',     label: 'Data',        icon: Database },
-  { id: 'about',    label: 'About',       icon: Info     },
+  { id: 'api',      label: 'API Keys',    icon: Key       },
+  { id: 'theme',    label: 'Theme',       icon: Palette   },
+  { id: 'business', label: 'Business',    icon: Briefcase },
+  { id: 'usage',    label: 'Usage',       icon: BarChart3 },
+  { id: 'data',     label: 'Data',        icon: Database  },
+  { id: 'about',    label: 'About',       icon: Info      },
+]
+
+const ROLE_PRESETS = [
+  {
+    id: 'sales', label: 'Sales', icon: TrendingUp, color: '#4ade80',
+    desc: 'Persuasive but honest. Understands needs and guides to a confident decision.',
+    apply: (s) => {
+      s.setAgentTaskFocus('general'); s.setAgentPersonality('friendly'); s.setAgentCommStyle('balanced')
+      s.setAgentCustomTraits('You are a persuasive but honest sales assistant. Focus on understanding customer needs, highlighting value, and guiding toward a confident decision. Never be pushy.')
+    },
+  },
+  {
+    id: 'support', label: 'Support', icon: Headphones, color: '#60a5fa',
+    desc: 'Patient and empathetic. Gives clear step-by-step solutions and confirms resolution.',
+    apply: (s) => {
+      s.setAgentTaskFocus('general'); s.setAgentPersonality('friendly'); s.setAgentCommStyle('balanced'); s.setAgentResponseLength('balanced')
+      s.setAgentCustomTraits('You are a patient, empathetic customer support agent. Acknowledge the issue, give clear step-by-step solutions, and confirm resolution. Stay calm and reassuring.')
+    },
+  },
+  {
+    id: 'marketing', label: 'Marketing', icon: Megaphone, color: '#c084fc',
+    desc: 'Creative and punchy. Generates catchy copy, campaign ideas, and on-brand content.',
+    apply: (s) => {
+      s.setAgentTaskFocus('creative'); s.setAgentPersonality('creative'); s.setAgentCommStyle('casual')
+      s.setAgentCustomTraits('You are a creative marketing assistant. Generate catchy copy, campaign ideas, and on-brand content. Be punchy and audience-aware.')
+    },
+  },
+  {
+    id: 'legal', label: 'Legal', icon: Scale, color: '#fbbf24',
+    desc: 'Precise and formal. Flags risks and adds a not-legal-advice disclaimer.',
+    apply: (s) => {
+      s.setAgentTaskFocus('analysis'); s.setAgentPersonality('professional'); s.setAgentCommStyle('formal'); s.setAgentResponseLength('detailed')
+      s.setAgentCustomTraits('You are a careful legal-aware assistant. Be precise, flag risks, use formal language, and always add a brief disclaimer that this is not formal legal advice.')
+    },
+  },
 ]
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('api')
-  const { openThemeCustomizer, themePreset, setTheme, dailyTokenCap, setDailyTokenCap, tokenUsage, jinaApiKey, setJinaApiKey } = useAppStore()
+  const {
+    openThemeCustomizer, themePreset, setTheme, dailyTokenCap, setDailyTokenCap, tokenUsage, jinaApiKey, setJinaApiKey,
+    businessMode, toggleBusinessMode, company, setCompany, modelUsage, usageDetail,
+    setAgentTaskFocus, setAgentPersonality, setAgentCommStyle, setAgentResponseLength, setAgentCustomTraits,
+  } = useAppStore()
+  const [appliedRole, setAppliedRole] = useState(null)
   const [jinaInput, setJinaInput] = useState('')
   const [jinaSaved, setJinaSaved] = useState(false)
   const [storageInfo, setStorageInfo] = useState(null)
@@ -31,6 +73,21 @@ export default function SettingsPage() {
     getStorageUsage().then(setStorageInfo)
     getAllConversations().then(c => setConvCount(c.length))
   }, [])
+
+  const handleApplyRole = (preset) => {
+    preset.apply({ setAgentTaskFocus, setAgentPersonality, setAgentCommStyle, setAgentResponseLength, setAgentCustomTraits })
+    setAppliedRole(preset.id)
+    setTimeout(() => setAppliedRole(r => (r === preset.id ? null : r)), 2000)
+  }
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setCompany({ logoDataUrl: reader.result })
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
 
   const handleClearData = async () => {
     if (!window.confirm('Delete ALL conversations? This cannot be undone.')) return
@@ -161,6 +218,294 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Business */}
+        {activeSection === 'business' && (
+          <div style={{ maxWidth: 720 }}>
+            <h2 style={{ margin: '0 0 6px', fontSize: '17px', fontWeight: 700 }}>Business Mode</h2>
+            <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Turn NexusAI into a branded assistant for your company.
+            </p>
+
+            {/* Enable toggle */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+              padding: '14px 16px', borderRadius: 10, marginBottom: 24,
+              border: businessMode ? '1px solid var(--color-primary-30)' : '1px solid var(--border-subtle)',
+              background: businessMode ? 'var(--color-primary-10)' : 'var(--bg-surface)',
+            }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Enable Business Mode</div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
+                  When on, your company context is injected into every chat automatically.
+                </div>
+              </div>
+              <button
+                onClick={toggleBusinessMode}
+                role="switch"
+                aria-checked={businessMode}
+                style={{
+                  width: 48, height: 26, borderRadius: 99, flexShrink: 0, cursor: 'pointer', border: 'none',
+                  position: 'relative', padding: 0, transition: 'background 150ms',
+                  background: businessMode ? 'var(--color-primary)' : 'var(--bg-elevated)',
+                }}
+              >
+                <span style={{
+                  position: 'absolute', top: 3, left: businessMode ? 25 : 3,
+                  width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                  transition: 'left 150ms', boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                }} />
+              </button>
+            </div>
+
+            {/* Company profile */}
+            <div style={{ opacity: businessMode ? 1 : 0.7, transition: 'opacity 150ms' }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 700 }}>Company Profile</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
+                <Field label="Company Name">
+                  <input
+                    type="text" value={company.name}
+                    onChange={e => setCompany({ name: e.target.value })}
+                    placeholder="Acme Inc."
+                    style={fieldInputStyle}
+                  />
+                </Field>
+                <Field label="Industry">
+                  <input
+                    type="text" value={company.industry}
+                    onChange={e => setCompany({ industry: e.target.value })}
+                    placeholder="e.g. SaaS, Legal, Healthcare"
+                    style={fieldInputStyle}
+                  />
+                </Field>
+                <Field label="Brand Voice">
+                  <textarea
+                    value={company.brandVoice}
+                    onChange={e => setCompany({ brandVoice: e.target.value })}
+                    placeholder="e.g. Professional, friendly, concise. Avoid jargon."
+                    rows={2}
+                    style={{ ...fieldInputStyle, resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </Field>
+                <Field label="Products / Services">
+                  <textarea
+                    value={company.products}
+                    onChange={e => setCompany({ products: e.target.value })}
+                    placeholder="What does your company offer?"
+                    rows={2}
+                    style={{ ...fieldInputStyle, resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </Field>
+                <Field label="Website">
+                  <input
+                    type="text" value={company.website}
+                    onChange={e => setCompany({ website: e.target.value })}
+                    placeholder="https://example.com"
+                    style={fieldInputStyle}
+                  />
+                </Field>
+                <Field label="Logo">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    {company.logoDataUrl ? (
+                      <>
+                        <img
+                          src={company.logoDataUrl} alt="Company logo"
+                          style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'contain', border: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}
+                        />
+                        <button className="btn-secondary" onClick={() => setCompany({ logoDataUrl: '' })} style={{ fontSize: 13 }}>
+                          <X size={14} /> Remove
+                        </button>
+                      </>
+                    ) : (
+                      <label className="btn-secondary" style={{ fontSize: 13, cursor: 'pointer' }}>
+                        <Download size={14} /> Upload logo
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
+                      </label>
+                    )}
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Used on branded exports.</span>
+                  </div>
+                </Field>
+              </div>
+
+              {/* Workspace roles */}
+              <h3 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700 }}>Workspace Roles</h3>
+              <p style={{ margin: '0 0 12px', fontSize: 12, color: 'var(--text-secondary)' }}>
+                Apply a preset to instantly tune the Agent Customizer for a specific job.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+                {ROLE_PRESETS.map(preset => {
+                  const Icon = preset.icon
+                  const applied = appliedRole === preset.id
+                  return (
+                    <div
+                      key={preset.id}
+                      style={{
+                        padding: 14, borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 8,
+                        border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{
+                          width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: `${preset.color}18`, border: `1px solid ${preset.color}35`,
+                        }}>
+                          <Icon size={16} style={{ color: preset.color }} />
+                        </div>
+                        <span style={{ fontSize: 14, fontWeight: 600 }}>{preset.label}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, flex: 1 }}>
+                        {preset.desc}
+                      </p>
+                      <button
+                        className={applied ? 'btn-primary' : 'btn-secondary'}
+                        onClick={() => handleApplyRole(preset)}
+                        style={{ fontSize: 12, justifyContent: 'center' }}
+                      >
+                        {applied ? (<><Check size={13} /> Applied</>) : 'Apply'}
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Usage */}
+        {activeSection === 'usage' && (() => {
+          const today = new Date().toISOString().slice(0, 10)
+          const todayTotal = tokenUsage?.[today] || 0
+          // Last 7 days
+          const days = []
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date()
+            d.setDate(d.getDate() - i)
+            const key = d.toISOString().slice(0, 10)
+            days.push({ key, value: tokenUsage?.[key] || 0, label: d.toLocaleDateString('en-US', { weekday: 'short' }) })
+          }
+          const maxDay = Math.max(1, ...days.map(d => d.value))
+          const hasDayData = days.some(d => d.value > 0)
+          // Per-model breakdown
+          const modelRows = Object.entries(modelUsage || {})
+            .filter(([, v]) => v > 0)
+            .sort((a, b) => b[1] - a[1])
+          const maxModel = Math.max(1, ...modelRows.map(([, v]) => v))
+
+          const resolveModel = (mkey) => {
+            const [pid, ...rest] = mkey.split(':')
+            const mid = rest.join(':')
+            const provider = PROVIDERS[pid]
+            const model = provider?.models?.find(m => m.id === mid)
+            return {
+              providerName: provider?.name || pid,
+              modelName: model?.name || mid || mkey,
+              logo: provider?.logo || '•',
+              color: provider?.color || 'var(--color-primary)',
+            }
+          }
+
+          return (
+            <div style={{ maxWidth: 720 }}>
+              <h2 style={{ margin: '0 0 6px', fontSize: '17px', fontWeight: 700 }}>Usage &amp; Budgeting</h2>
+              <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                Track token spend per day and per model.
+              </p>
+
+              {/* Today summary */}
+              <div style={{
+                padding: 16, borderRadius: 10, marginBottom: 24,
+                border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)',
+              }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>Today's usage</div>
+                <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-primary)' }}>
+                  {todayTotal.toLocaleString()} <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>tokens</span>
+                </div>
+                {dailyTokenCap > 0 && (
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                    of {dailyTokenCap.toLocaleString()} daily cap
+                  </div>
+                )}
+              </div>
+
+              {/* Last 7 days bar chart */}
+              <h3 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 700 }}>Last 7 days</h3>
+              <div style={{
+                padding: 16, borderRadius: 10, marginBottom: 24,
+                border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)',
+              }}>
+                {hasDayData ? (
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height: 140 }}>
+                    {days.map(d => (
+                      <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, height: '100%', justifyContent: 'flex-end' }}>
+                        <div
+                          title={`${d.value.toLocaleString()} tokens`}
+                          style={{
+                            width: '100%', maxWidth: 36, borderRadius: '4px 4px 0 0',
+                            height: `${Math.max(2, (d.value / maxDay) * 110)}px`,
+                            background: 'var(--color-primary)', opacity: d.value > 0 ? 1 : 0.25,
+                            transition: 'height 300ms ease',
+                          }}
+                        />
+                        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{d.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>
+                    No usage yet
+                  </div>
+                )}
+              </div>
+
+              {/* Per-model breakdown */}
+              <h3 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 700 }}>Per-model breakdown</h3>
+              <div style={{
+                padding: modelRows.length ? 8 : 16, borderRadius: 10, marginBottom: 16,
+                border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)',
+              }}>
+                {modelRows.length ? (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {modelRows.map(([mkey, value]) => {
+                      const info = resolveModel(mkey)
+                      return (
+                        <div key={mkey} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 8px' }}>
+                          <span style={{
+                            width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 10, fontWeight: 700, fontFamily: 'monospace',
+                            background: `${info.color}18`, color: info.color,
+                          }}>
+                            {info.logo}
+                          </span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 12.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {info.modelName}
+                            </div>
+                            <div style={{ height: 5, borderRadius: 3, background: 'var(--bg-elevated)', marginTop: 5, overflow: 'hidden' }}>
+                              <div style={{ height: '100%', width: `${(value / maxModel) * 100}%`, background: 'var(--color-primary)', borderRadius: 3 }} />
+                            </div>
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+                            {value.toLocaleString()}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>
+                    No usage yet
+                  </div>
+                )}
+              </div>
+
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                Token counts are estimates (~4 chars/token) for budgeting guidance.
+              </p>
+            </div>
+          )
+        })()}
 
         {/* Data */}
         {activeSection === 'data' && (
@@ -365,5 +710,20 @@ export default function SettingsPage() {
         )}
       </div>
     </div>
+  )
+}
+
+const fieldInputStyle = {
+  width: '100%', padding: '9px 12px', borderRadius: 8, boxSizing: 'border-box',
+  border: '1px solid var(--border)', background: 'var(--bg-elevated)',
+  color: 'var(--text-primary)', fontSize: 13, outline: 'none',
+}
+
+function Field({ label, children }) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{label}</span>
+      {children}
+    </label>
   )
 }

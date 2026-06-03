@@ -33,6 +33,7 @@ export default function ChatPage() {
     activeModels, selectedProviderId, selectedModelId, selectModel,
     providerKeys, openVotingModal, openRoundtableModal, openAddModelModal,
     agentName, webSearchEnabled, toggleWebSearch,
+    businessMode, company,
   } = useAppStore()
 
   const {
@@ -108,9 +109,10 @@ export default function ChatPage() {
   const canExport = messages.length > 0 && !showWelcome
 
   const handleExport = (fmt) => {
-    if (fmt === 'md')   exportAsMarkdown(messages, exportTitle)
-    if (fmt === 'xlsx') exportAsExcel(messages, exportTitle)
-    if (fmt === 'csv')  exportAsCSV(messages, exportTitle)
+    const branding = businessMode ? { companyName: company.name, logoDataUrl: company.logoDataUrl } : {}
+    if (fmt === 'md')   exportAsMarkdown(messages, exportTitle, branding)
+    if (fmt === 'xlsx') exportAsExcel(messages, exportTitle, branding)
+    if (fmt === 'csv')  exportAsCSV(messages, exportTitle, branding)
     setExportOpen(false)
   }
 

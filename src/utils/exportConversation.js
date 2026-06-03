@@ -1,8 +1,12 @@
 import * as XLSX from 'xlsx'
 
 // messages: array of { role, content, providerName, modelName, createdAt }
-export function exportAsMarkdown(messages, title = 'conversation') {
-  const lines = [`# ${title}`, '', `_Exported ${new Date().toLocaleString()}_`, '']
+export function exportAsMarkdown(messages, title = 'conversation', branding = {}) {
+  const lines = []
+  if (branding.companyName) {
+    lines.push(`> **${branding.companyName}** — exported from NexusAI`, '')
+  }
+  lines.push(`# ${title}`, '', `_Exported ${new Date().toLocaleString()}_`, '')
   for (const m of messages) {
     if (m.role === 'user') {
       lines.push(`## 🧑 You`, '', m.content, '')
@@ -17,21 +21,27 @@ export function exportAsMarkdown(messages, title = 'conversation') {
   downloadFile(lines.join('\n'), `${sanitize(title)}.md`, 'text/markdown')
 }
 
-export function exportAsExcel(messages, title = 'conversation') {
-  const rows = messages.map((m, i) => ({
-    '#': i + 1,
-    Role: m.role === 'user' ? 'You' : (m.modelName ? `${m.providerName} / ${m.modelName}` : 'Assistant'),
-    Message: m.content?.startsWith('__IMAGE__') ? '[Generated image]' : (m.content || ''),
-    Time: m.createdAt ? new Date(m.createdAt).toLocaleString() : '',
-  }))
-  const ws = XLSX.utils.json_to_sheet(rows)
+export function exportAsExcel(messages, title = 'conversation', branding = {}) {
+  const dataRows = messages.map((m, i) => ([
+    i + 1,
+    m.role === 'user' ? 'You' : (m.modelName ? `${m.providerName} / ${m.modelName}` : 'Assistant'),
+    m.content?.startsWith('__IMAGE__') ? '[Generated image]' : (m.content || ''),
+    m.createdAt ? new Date(m.createdAt).toLocaleString() : '',
+  ]))
+  const header = ['#', 'Role', 'Message', 'Time']
+  const aoa = []
+  if (branding.companyName) {
+    aoa.push([`${branding.companyName} — Conversation Export`], [])
+  }
+  aoa.push(header, ...dataRows)
+  const ws = XLSX.utils.aoa_to_sheet(aoa)
   ws['!cols'] = [{ wch: 4 }, { wch: 28 }, { wch: 90 }, { wch: 22 }]
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Conversation')
   XLSX.writeFile(wb, `${sanitize(title)}.xlsx`)
 }
 
-export function exportAsCSV(messages, title = 'conversation') {
+export function exportAsCSV(messages, title = 'conversation', branding = {}) {
   const rows = messages.map((m, i) => ({
     '#': i + 1,
     Role: m.role === 'user' ? 'You' : (m.modelName ? `${m.providerName} / ${m.modelName}` : 'Assistant'),
@@ -39,7 +49,10 @@ export function exportAsCSV(messages, title = 'conversation') {
     Time: m.createdAt ? new Date(m.createdAt).toLocaleString() : '',
   }))
   const ws = XLSX.utils.json_to_sheet(rows)
-  const csv = XLSX.utils.sheet_to_csv(ws)
+  let csv = XLSX.utils.sheet_to_csv(ws)
+  if (branding.companyName) {
+    csv = `${branding.companyName} — Conversation Export\n\n${csv}`
+  }
   downloadFile(csv, `${sanitize(title)}.csv`, 'text/csv')
 }
 
