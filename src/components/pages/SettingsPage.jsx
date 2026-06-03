@@ -1,18 +1,29 @@
 import { useState, useEffect } from 'react'
-import { Key, Palette, Database, Shield, Info, Trash2, Download, HardDrive, RefreshCw, Briefcase, BarChart3, Check, TrendingUp, Headphones, Megaphone, Scale, X } from 'lucide-react'
+import { Key, Palette, Database, Shield, Info, Trash2, Download, HardDrive, RefreshCw, Briefcase, BarChart3, Check, TrendingUp, Headphones, Megaphone, Scale, X, Sliders, Mail, Upload, Send, FileText, Tag, Bug, ArrowRight } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import { getStorageUsage, getAllConversations, deleteConversation } from '../../utils/db'
 import APISettings from '../settings/APISettings'
 import ThemeCustomizer from '../settings/ThemeCustomizer'
 import { COLOR_PRESETS, PROVIDERS } from '../../utils/providers'
+import { TEAM_TEMPLATES } from '../../utils/teamTemplates'
 
 const SECTIONS = [
   { id: 'api',      label: 'API Keys',    icon: Key       },
   { id: 'theme',    label: 'Theme',       icon: Palette   },
   { id: 'business', label: 'Business',    icon: Briefcase },
   { id: 'usage',    label: 'Usage',       icon: BarChart3 },
+  { id: 'advanced', label: 'Advanced',    icon: Sliders   },
   { id: 'data',     label: 'Data',        icon: Database  },
   { id: 'about',    label: 'About',       icon: Info      },
+]
+
+const ICON_MAP = { Mail, Send, Briefcase, FileText, Scale, Megaphone, Tag, Bug }
+
+const EMAIL_TONES = [
+  { id: 'professional', label: 'Professional' },
+  { id: 'friendly',     label: 'Friendly' },
+  { id: 'concise',      label: 'Concise' },
+  { id: 'formal',       label: 'Formal' },
 ]
 
 const ROLE_PRESETS = [
@@ -56,7 +67,10 @@ export default function SettingsPage() {
     openThemeCustomizer, themePreset, setTheme, dailyTokenCap, setDailyTokenCap, tokenUsage, jinaApiKey, setJinaApiKey,
     businessMode, toggleBusinessMode, company, setCompany, modelUsage, usageDetail,
     setAgentTaskFocus, setAgentPersonality, setAgentCommStyle, setAgentResponseLength, setAgentCustomTraits,
+    emailRules, setEmailRules, emailSignature, setEmailSignature, emailBannerDataUrl, setEmailBanner,
+    emailTone, setEmailTone, addPrompt, setActivePage,
   } = useAppStore()
+  const [templateState, setTemplateState] = useState({}) // { [id]: 'used' | 'saved' }
   const [appliedRole, setAppliedRole] = useState(null)
   const [jinaInput, setJinaInput] = useState('')
   const [jinaSaved, setJinaSaved] = useState(false)
@@ -87,6 +101,30 @@ export default function SettingsPage() {
     reader.onload = () => setCompany({ logoDataUrl: reader.result })
     reader.readAsDataURL(file)
     e.target.value = ''
+  }
+
+  const handleBannerUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setEmailBanner(reader.result)
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handleUseTemplate = (template) => {
+    addPrompt(template.title, template.prompt)
+    setTemplateState(s => ({ ...s, [template.id]: 'used' }))
+    setTimeout(() => setActivePage('chat'), 400)
+  }
+
+  const handleSaveTemplate = (template) => {
+    addPrompt(template.title, template.prompt)
+    setTemplateState(s => ({ ...s, [template.id]: 'saved' }))
+    setTimeout(() => setTemplateState(s => {
+      if (s[template.id] !== 'saved') return s
+      const next = { ...s }; delete next[template.id]; return next
+    }), 1500)
   }
 
   const handleClearData = async () => {
@@ -506,6 +544,153 @@ export default function SettingsPage() {
             </div>
           )
         })()}
+
+        {/* Advanced */}
+        {activeSection === 'advanced' && (
+          <div style={{ maxWidth: 760 }}>
+            <h2 style={{ margin: '0 0 6px', fontSize: '17px', fontWeight: 700 }}>Advanced</h2>
+            <p style={{ margin: '0 0 24px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Email assistant rules, branding, and team workflow templates.
+            </p>
+
+            {/* ── Email Assistant ── */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Mail size={16} style={{ color: 'var(--color-primary)' }} />
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>Email Assistant</h3>
+            </div>
+            <p style={{ margin: '0 0 16px', fontSize: 12, color: 'var(--text-secondary)' }}>
+              These settings shape how drafted replies are analysed and written.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 20 }}>
+              <Field label="Email Reply Rules">
+                <textarea
+                  value={emailRules}
+                  onChange={e => setEmailRules(e.target.value)}
+                  placeholder="e.g. Always be polite. Flag anything about refunds or cancellations. Never commit to specific dates. Escalate legal threats."
+                  rows={4}
+                  style={{ ...fieldInputStyle, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5 }}
+                />
+              </Field>
+
+              <Field label="Tone">
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {EMAIL_TONES.map(t => {
+                    const active = emailTone === t.id
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => setEmailTone(t.id)}
+                        style={{
+                          padding: '7px 14px', borderRadius: 99, fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+                          border: active ? '1px solid var(--color-primary)' : '1px solid var(--border-subtle)',
+                          background: active ? 'var(--color-primary-10)' : 'transparent',
+                          color: active ? 'var(--color-primary)' : 'var(--text-secondary)',
+                          transition: 'all 150ms',
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </Field>
+
+              <Field label="Signature">
+                <textarea
+                  value={emailSignature}
+                  onChange={e => setEmailSignature(e.target.value)}
+                  placeholder={"e.g. Best regards,\nThe Acme Team"}
+                  rows={3}
+                  style={{ ...fieldInputStyle, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5 }}
+                />
+              </Field>
+
+              <Field label="Reply Banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  {emailBannerDataUrl ? (
+                    <>
+                      <img
+                        src={emailBannerDataUrl} alt="Reply banner"
+                        style={{ maxHeight: 80, maxWidth: 240, borderRadius: 8, objectFit: 'cover', border: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}
+                      />
+                      <button className="btn-secondary" onClick={() => setEmailBanner('')} style={{ fontSize: 13 }}>
+                        <X size={14} /> Remove
+                      </button>
+                    </>
+                  ) : (
+                    <label className="btn-secondary" style={{ fontSize: 13, cursor: 'pointer' }}>
+                      <Upload size={14} /> Upload banner
+                      <input type="file" accept="image/*" onChange={handleBannerUpload} style={{ display: 'none' }} />
+                    </label>
+                  )}
+                </div>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
+                  Shown at the top of drafted replies and included when you Copy as HTML.
+                </span>
+              </Field>
+            </div>
+
+            <button className="btn-primary" onClick={() => setActivePage('email')} style={{ fontSize: 13, marginBottom: 32 }}>
+              <Mail size={14} /> Open Email Assistant <ArrowRight size={14} />
+            </button>
+
+            {/* ── Team Templates ── */}
+            <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700 }}>Team Templates</h3>
+            <p style={{ margin: '0 0 16px', fontSize: 12, color: 'var(--text-secondary)' }}>
+              Pre-built workflows. Use one in chat instantly, or save it to your prompt library.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+              {TEAM_TEMPLATES.map(template => {
+                const Icon = ICON_MAP[template.icon] || Mail
+                const state = templateState[template.id]
+                return (
+                  <div
+                    key={template.id}
+                    style={{
+                      padding: 14, borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 8,
+                      border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: 'var(--color-primary-10)', border: '1px solid var(--color-primary-20)',
+                      }}>
+                        <Icon size={16} style={{ color: 'var(--color-primary)' }} />
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{template.title}</div>
+                        <span style={{ fontSize: 10.5, color: 'var(--text-muted)' }}>{template.category}</span>
+                      </div>
+                    </div>
+                    <p style={{ margin: 0, fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5, flex: 1 }}>
+                      {template.desc}
+                    </p>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        className="btn-primary"
+                        onClick={() => handleUseTemplate(template)}
+                        style={{ fontSize: 12, flex: 1, justifyContent: 'center' }}
+                      >
+                        {state === 'used' ? (<><Check size={13} /> Added!</>) : 'Use in Chat'}
+                      </button>
+                      <button
+                        className="btn-secondary"
+                        onClick={() => handleSaveTemplate(template)}
+                        style={{ fontSize: 12, flex: 1, justifyContent: 'center' }}
+                      >
+                        {state === 'saved' ? (<><Check size={13} /> Saved</>) : 'Save'}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Data */}
         {activeSection === 'data' && (

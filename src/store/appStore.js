@@ -192,6 +192,16 @@ export const useAppStore = create(
         dayMap[modelKey] = (dayMap[modelKey] || 0) + (count || 0)
         return { usageDetail: { ...s.usageDetail, [day]: dayMap } }
       }),
+
+      // ─── Advanced: Email Assistant ───────────────────────────────
+      emailRules: '',          // user rules: what to look out for
+      emailSignature: '',      // sign-off appended to drafts
+      emailBannerDataUrl: '',  // uploaded banner image shown atop replies
+      emailTone: 'professional', // professional | friendly | concise | formal
+      setEmailRules:      (v) => set({ emailRules: v }),
+      setEmailSignature:  (v) => set({ emailSignature: v }),
+      setEmailBanner:     (v) => set({ emailBannerDataUrl: v }),
+      setEmailTone:       (v) => set({ emailTone: v }),
     }),
     {
       name: 'nexus-ai-app',
@@ -228,6 +238,10 @@ export const useAppStore = create(
         company:               s.company,
         modelUsage:            s.modelUsage,
         usageDetail:           s.usageDetail,
+        emailRules:            s.emailRules,
+        emailSignature:        s.emailSignature,
+        emailBannerDataUrl:    s.emailBannerDataUrl,
+        emailTone:             s.emailTone,
       }),
     }
   )

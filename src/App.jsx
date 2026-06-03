@@ -6,6 +6,7 @@ import PixelLoader from './components/common/PixelLoader'
 import Layout from './components/layout/Layout'
 import DashboardPage from './components/pages/DashboardPage'
 import ChatPage from './components/pages/ChatPage'
+import EmailPage from './components/pages/EmailPage'
 import ComparePage from './components/pages/ComparePage'
 import ModelsPage from './components/pages/ModelsPage'
 import SettingsPage from './components/pages/SettingsPage'
@@ -32,6 +33,7 @@ export default function App() {
     switch (activePage) {
       case 'dashboard': return <DashboardPage />
       case 'chat':      return <ChatPage />
+      case 'email':     return <EmailPage />
       case 'compare':   return <ComparePage />
       case 'models':    return <ModelsPage />
       case 'settings':  return <SettingsPage />
