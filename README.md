@@ -6,6 +6,30 @@
 
 ---
 
+
+## What is NexusAI?
+
+NexusAI is a single, polished web app that puts **50+ AI models from 15+ providers** behind one interface — OpenAI, Anthropic, Google, Groq, Cerebras, Mistral, NVIDIA, DeepSeek, Llama and more. Bring your own free API keys and switch between frontier models instantly, with no vendor lock-in and no backend storing your data.
+
+But the reason it's more than "another chat wrapper" is what it lets models do **together**: vote on each other's answers, debate a topic at a roundtable, and search the live web — all from the browser.
+
+**Built with:** React · Vite · Zustand · TailwindCSS · Framer Motion · IndexedDB · installable PWA · a Cloudflare Worker proxy and a Node email server for the parts the browser can't do alone.
+
+---
+
+## ✨ Flagship Features
+
+| Feature | What it does |
+|---|---|
+| 🗳️ **Make Models Vote** | Ask several models the same question, then let a separate panel of models **vote on the best answer** — with full voter reasoning and a ranked winner. |
+| 🧑‍🤝‍🧑 **Roundtable** | Pick 2–5 models, give them a topic, and watch them **debate each other** over multiple rounds. Jump into the conversation anytime. |
+| 🌐 **Web Search** | Toggle on real-time web access for *any* model. Uses Jina when a free key is set, otherwise falls back to DuckDuckGo + Wikipedia — results are injected into the model's context. |
+| 🤖 **Agent Customizer** | Reshape any model's behaviour: system prompt, temperature, top-p, max tokens, plus built-in preset roles (Coder, Researcher, Teacher…). |
+| 📱 **Installable PWA** | Installs as a full offline app. All chats and settings live in your device's IndexedDB — nothing leaves your machine except your chosen provider's API call. |
+| 🎨 **Theme Customizer** | 13 presets plus any custom hex colour. |
+
+---
+
 ## Adding LLMs / Models
 
 NexusAI supports two types of models: **Preloaded free models** (ready to use with just an API key) and **custom models** you add yourself.
@@ -196,6 +220,33 @@ A unique NexusAI feature. Instead of asking one model, you ask many — and let 
 6. See the winning answer with vote counts and voter reasoning
 
 Best used for: important decisions, code review, research, creative writing comparison.
+
+---
+
+## Roundtable — Models Chat With Each Other
+
+Instead of one answer, host a **group discussion** between models.
+
+1. In the chat input bar, click the **🧑‍🤝‍🧑 Roundtable** button
+2. Enter a **discussion topic** (e.g. *"What's the best programming language for beginners and why?"*)
+3. Choose **Rounds** (1–3) — how many times each model speaks
+4. Select **2–5 participants**
+5. Watch them respond to and challenge each other in turn — and **jump in yourself** whenever you want to steer the debate
+
+Great for stress-testing ideas, comparing reasoning styles, and surfacing disagreements between models.
+
+---
+
+## Web Search
+
+Give any model live internet access — no special "search" model required.
+
+- Click the **🌐 Web Search** toggle in the chat input bar
+- For each question, NexusAI runs a search and feeds the results into the model's context before it answers
+- **With a free [Jina](https://jina.ai/) key** (added in Settings): real-time, full-text results
+- **Without a key:** automatic fallback to DuckDuckGo Instant Answer + Wikipedia — still free, no signup
+
+Useful for current events, documentation lookups, and grounding answers in real sources.
 
 ---
 
